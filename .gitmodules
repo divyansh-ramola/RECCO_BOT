@@ -1,0 +1,3 @@
+[submodule "src/Person_MinkUNet"]
+	path = src/Person_MinkUNet
+	url = https://github.com/divyansh-ramola/Person_MinkUNet.git

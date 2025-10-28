@@ -21,35 +21,31 @@
   
   <link name="base_link">
     <inertial>
-      <origin
-        xyz="-0.00086194 -0.0016089 0.0089306"
-        rpy="0 0 0" />
-      <mass
-        value="0.21673" />
-      <inertia
-        ixx="0.00046806"
-        ixy="1.2348E-05"
-        ixz="2.9514E-06"
-        iyy="0.00067187"
-        iyz="1.3398E-06"
-        izz="0.00091551" />
+      <!-- Shift mass opposite to mesh displacement -->
+      <origin xyz="-0.22536 -0.06397 0.12957" rpy="0 0 0"/>
+      <mass value="0.21673"/>
+      <inertia ixx="0.00046806" ixy="1.2348E-05" ixz="2.9514E-06"
+              iyy="0.00067187" iyz="1.3398E-06" izz="0.00091551"/>
     </inertial>
+
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://reccobot_description/meshes/base_link.STL" />
+        <mesh filename="package://reccobot_description/meshes/base_link.STL"/>
       </geometry>
       <material name="">
-        <color rgba="0.960 0.620 0.043 1.0" />
+        <color rgba="0.960 0.620 0.043 1.0"/>
       </material>
     </visual>
+
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://reccobot_description/meshes/base_link.STL" />
+        <mesh filename="package://reccobot_description/meshes/base_link.STL"/>
       </geometry>
     </collision>
   </link>
+
   <link name="servo11">
     <inertial>
       <origin xyz="-0.17622 0.060069 0.022478" rpy="0 0 0" />

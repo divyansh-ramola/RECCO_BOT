@@ -6,7 +6,7 @@
   <!-- 
     ROTATION ADJUSTMENT: 
     To modify the robot's orientation in the world frame, change the 'rpy' values below.
-    Current: rpy="0 0 1.5708" rotates the robot 90 degrees around Z-axis
+    Current: rpy="-1.5708 0 0" - rotates robot -90° around X-axis (red) to align with ground
     Format: rpy="roll pitch yaw" in radians
     Common values: 
       - 90 degrees = 1.5708 radians
@@ -16,12 +16,13 @@
   <joint name="world_to_base" type="fixed">
     <parent link="world"/>
     <child link="base_link"/>
-    <origin xyz="0 0 0" rpy="0 0 1.5708"/>
+    <origin xyz="0 0 0" rpy="-1.5708 0 0"/>
   </joint>
   
   <link name="base_link">
     <inertial>
-      <origin xyz="-0.227493721449308 0.129991746243675 0.0555028320183144" rpy="0 0 0" />
+     <!--   <origin xyz="-0.227493721449308 0.129991746243675 0.0555028320183144" rpy="0 0 0" /> -->
+      <origin xyz="0 0 0 " rpy="0 0 0" />
       <mass value="0.216733439424429" />
       <inertia ixx="0.000468061564094102" ixy="1.23484133859042E-05" ixz="2.95135168313925E-06" iyy="0.00067187213255609" iyz="1.33982564991574E-06" izz="0.000915513516700903" />
     </inertial>

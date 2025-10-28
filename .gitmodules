@@ -1,3 +1,9 @@
 [submodule "Person_MinkUNet"]
 	path = Person_MinkUNet
 	url = https://github.com/divyansh-ramola/Person_MinkUNet.git
+[submodule "urdf_launch"]
+	path = urdf_launch
+	url = git@github.com:ros/urdf_launch.git
+[submodule "urdf_tutorial"]
+	path = urdf_tutorial
+	url = https://github.com/ros/urdf_tutorial.git

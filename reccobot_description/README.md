@@ -1,1 +1,0 @@
- "# reccobot_description"

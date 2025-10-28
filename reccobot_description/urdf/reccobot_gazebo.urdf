@@ -1,0 +1,163 @@
+<!-- Gazebo tuning snippet for reccobot: insert into your URDF under <robot> -->
+<gazebo reference="coxa1j">
+  <kp>80</kp>
+  <ki>0.5</ki>
+  <kd>2.0</kd>
+  <friction>0.02</friction>
+  <damping>0.04</damping>
+  <maxEffort>0.98</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="femur1j">
+  <kp>100</kp>
+  <ki>0.7</ki>
+  <kd>3.0</kd>
+  <friction>0.03</friction>
+  <damping>0.05</damping>
+  <maxEffort>3.9</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="tibia1j">
+  <kp>80</kp>
+  <ki>0.5</ki>
+  <kd>2.0</kd>
+  <friction>0.02</friction>
+  <damping>0.04</damping>
+  <maxEffort>0.98</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="foot1j">
+  <kp>80</kp>
+  <ki>0.5</ki>
+  <kd>2.0</kd>
+  <friction>0.02</friction>
+  <damping>0.04</damping>
+  <maxEffort>0.98</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="coxa2j">
+  <kp>80</kp>
+  <ki>0.5</ki>
+  <kd>2.0</kd>
+  <friction>0.02</friction>
+  <damping>0.04</damping>
+  <maxEffort>0.98</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="femur2j">
+  <kp>100</kp>
+  <ki>0.7</ki>
+  <kd>3.0</kd>
+  <friction>0.03</friction>
+  <damping>0.05</damping>
+  <maxEffort>3.9</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="tibia2j">
+  <kp>80</kp>
+  <ki>0.5</ki>
+  <kd>2.0</kd>
+  <friction>0.02</friction>
+  <damping>0.04</damping>
+  <maxEffort>0.98</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="foot2j">
+  <kp>80</kp>
+  <ki>0.5</ki>
+  <kd>2.0</kd>
+  <friction>0.02</friction>
+  <damping>0.04</damping>
+  <maxEffort>0.98</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="coxa3j">
+  <kp>80</kp>
+  <ki>0.5</ki>
+  <kd>2.0</kd>
+  <friction>0.02</friction>
+  <damping>0.04</damping>
+  <maxEffort>0.98</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="femur3j">
+  <kp>100</kp>
+  <ki>0.7</ki>
+  <kd>3.0</kd>
+  <friction>0.03</friction>
+  <damping>0.05</damping>
+  <maxEffort>3.9</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="tibia3j">
+  <kp>80</kp>
+  <ki>0.5</ki>
+  <kd>2.0</kd>
+  <friction>0.02</friction>
+  <damping>0.04</damping>
+  <maxEffort>0.98</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="foot3j">
+  <kp>80</kp>
+  <ki>0.5</ki>
+  <kd>2.0</kd>
+  <friction>0.02</friction>
+  <damping>0.04</damping>
+  <maxEffort>0.98</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="coxa4j">
+  <kp>80</kp>
+  <ki>0.5</ki>
+  <kd>2.0</kd>
+  <friction>0.02</friction>
+  <damping>0.04</damping>
+  <maxEffort>0.98</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="femur4j">
+  <kp>100</kp>
+  <ki>0.7</ki>
+  <kd>3.0</kd>
+  <friction>0.03</friction>
+  <damping>0.05</damping>
+  <maxEffort>3.9</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="tibia4j">
+  <kp>80</kp>
+  <ki>0.5</ki>
+  <kd>2.0</kd>
+  <friction>0.02</friction>
+  <damping>0.04</damping>
+  <maxEffort>0.98</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="foot4j">
+  <kp>80</kp>
+  <ki>0.5</ki>
+  <kd>2.0</kd>
+  <friction>0.02</friction>
+  <damping>0.04</damping>
+  <maxEffort>0.98</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="cam1j">
+  <kp>40</kp>
+  <ki>0.3</ki>
+  <kd>1.5</kd>
+  <friction>0.015</friction>
+  <damping>0.03</damping>
+  <maxEffort>0.18</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>
+<gazebo reference="lidar1j">
+  <kp>5</kp>
+  <ki>0.0</ki>
+  <kd>0.5</kd>
+  <friction>0.01</friction>
+  <damping>0.02</damping>
+  <maxEffort>0.255</maxEffort>
+  <provideFeedback>true</provideFeedback>
+</gazebo>

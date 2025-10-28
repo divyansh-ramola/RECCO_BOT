@@ -1,0 +1,1 @@
+controller_joint_names: ['', 'coxa1j', 'femur1j', 'tibia1j', 'feet1j', 'coxa2j', 'femur2j', 'tibia2j', 'feet2j', 'coxa3j', 'femur3j', 'tibia3j', 'feet3j', 'coxa4j', 'femur4j', 'tibia4j', 'feet4j', 'cambase_caml1', 'caml1_caml2', 'base_coupling', ]

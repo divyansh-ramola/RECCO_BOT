@@ -1,0 +1,29 @@
+<!-- ros2_control snippet: controllers and joint interfaces -->
+<ros2_control name="reccobot_controllers">
+  <controller name="leg_controller" type="position_controllers/JointGroupPositionController">
+    <joints>
+      <joint>coxa1j</joint>
+      <joint>femur1j</joint>
+      <joint>tibia1j</joint>
+      <joint>foot1j</joint>
+      <joint>coxa2j</joint>
+      <joint>femur2j</joint>
+      <joint>tibia2j</joint>
+      <joint>foot2j</joint>
+      <joint>coxa3j</joint>
+      <joint>femur3j</joint>
+      <joint>tibia3j</joint>
+      <joint>foot3j</joint>
+      <joint>coxa4j</joint>
+      <joint>femur4j</joint>
+      <joint>tibia4j</joint>
+      <joint>foot4j</joint>
+    </joints>
+  </controller>
+  <controller name="sensor_controller" type="position_controllers/JointGroupPositionController">
+    <joints>
+      <joint>cam1j</joint>
+      <joint>lidar1j</joint>
+    </joints>
+  </controller>
+</ros2_control>

@@ -1,0 +1,1244 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="reccobot_description">
+  <link name="base_link">
+    <inertial>
+      <origin xyz="-0.227493721449308 0.129991746243675 0.0555028320183144" rpy="0 0 0" />
+      <mass value="0.216733439424429" />
+      <inertia ixx="0.000468061564094102" ixy="1.23484133859042E-05" ixz="2.95135168313925E-06" iyy="0.00067187213255609" iyz="1.33982564991574E-06" izz="0.000915513516700903" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/base_link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.960 0.620 0.043 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="servo11">
+    <inertial>
+      <origin xyz="-0.17622 0.060069 0.022478" rpy="0 0 0" />
+      <mass value="0.055057" />
+      <inertia ixx="1.166E-05" ixy="2.8712E-06" ixz="-3.1749E-07" iyy="1.1685E-05" iyz="3.1572E-07" izz="9.2502E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo11.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.231 0.510 0.961 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo11.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="base_servo11" type="fixed">
+    <origin xyz="0.022459 -0.037253 0.013934" rpy="1.5708 0 0" />
+    <parent link="base_link" />
+    <child link="servo11" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="coxa1l">
+    <inertial>
+      <origin xyz="-0.031783529731658 0.0231299258057219 0.0172727573242147" rpy="0 0 0" />
+      <mass value="0.0210998931296677" />
+      <inertia ixx="1.77344719326153E-05" ixy="3.48878926734278E-06" ixz="-1.73448229544293E-07" iyy="2.13052902677955E-05" iyz="3.93407587336972E-07" izz="1.11184022512421E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/coxa1l.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.231 0.510 0.961 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/coxa1l.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="coxa1j" type="revolute">
+    <origin xyz="-0.16941 0.053318 0" rpy="0 0 3.1194" />
+    <parent link="servo11" />
+    <child link="coxa1l" />
+    <axis xyz="0 0 1" />
+    <ros2_control><joint name="coxa1j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="servo12">
+    <inertial>
+      <origin xyz="-0.364027031928889 0.221609020499465 0.0194140519398458" rpy="0 0 0" />
+      <mass value="0.032837341863771" />
+      <inertia ixx="8.91392891154251E-06" ixy="-2.96887244021664E-06" ixz="2.48695120478788E-07" iyy="8.98362999365117E-06" iyz="2.45792507834053E-07" izz="8.26690043502531E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo12.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.063 0.722 0.506 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo12.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="coxa1_servo12" type="fixed">
+    <origin xyz="0.3294 -0.17808 -0.0012" rpy="0 0 0.002602" />
+    <parent link="coxa1l" />
+    <child link="servo12" />
+    <axis xyz="0 0 0" />
+  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="femur1l">
+    <inertial>
+      <origin xyz="-0.0969389150859866 -0.0331343043722141 -0.000197850701517746" rpy="0 0 0" />
+      <mass value="0.019252812658229" />
+      <inertia ixx="1.48542331366969E-05" ixy="1.03180072158057E-06" ixz="1.09104621244036E-07" iyy="1.41644288284789E-05" iyz="-5.45032620583719E-08" izz="2.8003778626815E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/femur1l.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.063 0.722 0.506 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/femur1l.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="femur1j" type="revolute">
+    <origin xyz="-0.3027 0.28222 0.0099194" rpy="-0.0053339 -0.0052991 -0.0025879" />
+    <parent link="servo12" />
+    <child link="femur1l" />
+    <axis xyz="0.70941 0.70479 0" />
+    <ros2_control><joint name="femur1j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint>
+  <link name="servo13">
+    <inertial>
+      <origin xyz="-0.0350095850454116 -0.0215653267559031 -1.98928617279256E-05" rpy="0 0 0" />
+      <mass value="0.0241727614673822" />
+      <inertia ixx="4.85376814796249E-06" ixy="2.48640535301553E-07" ixz="-5.91906526276493E-09" iyy="5.92686146082808E-06" iyz="4.34982077248791E-09" izz="8.53500109133005E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo13.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.231 0.510 0.961 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo13.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="tibia1j" type="revolute">
+    <origin xyz="-0.095741 0.031748 0" rpy="0.0075394 0.0074512 0.0026301" />
+    <parent link="femur1l" />
+    <child link="servo13" />
+    <axis xyz="0.71124 0.70294 0" />
+    <ros2_control><joint name="tibia1j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="tibia1l">
+    <inertial>
+      <origin xyz="-0.455256586442077 0.29810523231319 0.0133956395769309" rpy="0 0 0" />
+      <mass value="0.0203799728923894" />
+      <inertia ixx="1.67743453323067E-05" ixy="1.06771996699811E-05" ixz="-2.53160566182682E-06" iyy="1.34347140463777E-05" iyz="1.93830128872836E-06" izz="2.5516950009184E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/tibia1l.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/tibia1l.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="servo13_tibia1l" type="fixed">
+    <origin xyz="0.39838 -0.31423 -0.0076912" rpy="0 0 -0.002602" />
+    <parent link="servo13" />
+    <child link="tibia1l" />
+    <axis xyz="0 0 0" />
+  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="feet1">
+    <inertial>
+      <origin xyz="-0.0201025875161129 -0.0114983438665156 -0.00520049603956912" rpy="0 0 0" />
+      <mass value="0.003079829271407" />
+      <inertia ixx="1.75255793017129E-07" ixy="-3.15913841474438E-08" ixz="6.25915989212759E-09" iyy="1.75668997697067E-07" iyz="-6.29890327276735E-09" izz="2.05025345317238E-07" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/feet1.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/feet1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="feet1j" type="revolute">
+    <origin xyz="-0.49335 0.37521 -0.015754" rpy="-0.050665 -0.050271 0.001274" />
+    <parent link="tibia1l" />
+    <child link="feet1" />
+    <axis xyz="0.70941 0.70479 0" />
+    <limit lower="-0.785" upper="0.785" effort="0" velocity="10" />
+    <dynamics damping="0.2" friction="0.05" />
+    <safety_controller soft_upper_limit="0.7" soft_lower_limit="-0.7" k_position="5" k_velocity="0.1" />
+  </joint>
+  <link name="servo21">
+    <inertial>
+      <origin xyz="-0.322289915553315 0.0600292971769946 0.0224779989169101" rpy="0 0 0" />
+      <mass value="0.0550572632102972" />
+      <inertia ixx="1.16849388814822E-05" ixy="-2.87122122969457E-06" ixz="3.15715740427033E-07" iyy="1.16596364253512E-05" iyz="3.17489347279061E-07" izz="9.25022418211167E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo21.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.231 0.510 0.961 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo21.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="base_servo21" type="fixed">
+    <origin xyz="0.022459 -0.037253 0.013934" rpy="1.5708 0 0" />
+    <parent link="base_link" />
+    <child link="servo21" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="coxa2l">
+    <inertial>
+      <origin xyz="-0.0317835318991771 0.0231299252235586 0.0172727578917613" rpy="0 0 0" />
+      <mass value="0.0210998942749586" />
+      <inertia ixx="1.77344720147065E-05" ixy="3.48878892525706E-06" ixz="-1.73447181179619E-07" iyy="2.13052915102114E-05" iyz="3.93407923297153E-07" izz="1.11184035463231E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/coxa2l.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.231 0.510 0.961 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/coxa2l.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="coxa2j" type="revolute">
+    <origin xyz="-0.32904 0.053225 0" rpy="0 0 1.5445" />
+    <parent link="servo21" />
+    <child link="coxa2l" />
+    <axis xyz="0 0 1" />
+    <ros2_control><joint name="coxa2j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="servo22">
+    <inertial>
+      <origin xyz="-0.364027031922669 0.221609020500305 0.0194140520671123" rpy="0 0 0" />
+      <mass value="0.0328373418660146" />
+      <inertia ixx="8.91392891208005E-06" ixy="-2.9688724401605E-06" ixz="2.48695119849567E-07" iyy="8.98362999447983E-06" iyz="2.45792509417182E-07" izz="8.26690043512454E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo22.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.063 0.722 0.506 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo22.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="coxa2l_servo2l" type="fixed">
+    <origin xyz="0.32962 -0.17788 -0.00115" rpy="0 0 0.002602" />
+    <parent link="coxa2l" />
+    <child link="servo22" />
+    <axis xyz="0 0 0" />
+  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="femur2l">
+    <inertial>
+      <origin xyz="-0.0354343003421015 0.0279697703671011 -0.000197862210528851" rpy="0 0 0" />
+      <mass value="0.0192528114858659" />
+      <inertia ixx="1.48542313056443E-05" ixy="1.03179957500865E-06" ixz="1.09103927008919E-07" iyy="1.41644334268148E-05" iyz="-5.45045782090742E-08" izz="2.80037820959128E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/femur2l.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.063 0.722 0.506 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/femur2l.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="femur2j" type="revolute">
+    <origin xyz="-0.36437 0.22127 0.0099194" rpy="0.006709 0.0066652 -0.0025797" />
+    <parent link="servo22" />
+    <child link="femur2l" />
+    <axis xyz="0.70941 0.70479 0" />
+    <ros2_control><joint name="femur2j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint>
+  <link name="servo23">
+    <inertial>
+      <origin xyz="-0.00573943365860688 0.00736325444199537 -1.9892851393262E-05" rpy="0 0 0" />
+      <mass value="0.0241727614204212" />
+      <inertia ixx="4.85376814165641E-06" ixy="2.48640584019119E-07" ixz="-5.91911876257097E-09" iyy="5.92686151814361E-06" iyz="4.34984316824873E-09" izz="8.53500115708355E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo23.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.231 0.510 0.961 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo23.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="tibia2j" type="revolute">
+    <origin xyz="-0.063431 0.063847 0" rpy="0.010613 0.010489 0.0026577" />
+    <parent link="femur2l" />
+    <child link="servo23" />
+    <axis xyz="0.71124 0.70294 0" />
+    <ros2_control><joint name="tibia2j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="tibia2l">
+    <inertial>
+      <origin xyz="-0.465322797606374 0.298108957138989 0.00402166501611856" rpy="0 0 0" />
+      <mass value="0.0203799805545255" />
+      <inertia ixx="1.67743481145259E-05" ixy="1.06772013679818E-05" ixz="-2.53160639755251E-06" iyy="1.34347166284829E-05" iyz="1.93830138263256E-06" izz="2.55169551452292E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/tibia2l.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/tibia2l.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="servo23_tibia2j" type="fixed">
+    <origin xyz="0.43771 -0.28536 0.0016775" rpy="0 0 -0.002602" />
+    <parent link="servo23" />
+    <child link="tibia2l" />
+    <axis xyz="0 0 0" />
+  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="feet2">
+    <inertial>
+      <origin xyz="-0.00469227252125851 0.00381160986770518 -0.00520049499209307" rpy="0 0 0" />
+      <mass value="0.00307983009444251" />
+      <inertia ixx="1.75255802828977E-07" ixy="-3.15913836042488E-08" ixz="6.2591920075703E-09" iyy="1.75669046280165E-07" iyz="-6.29889609442229E-09" izz="2.05025370595101E-07" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/feet2.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/feet2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="feet2j" type="revolute">
+    <origin xyz="-0.51952 0.35922 -0.025128" rpy="-0.026829 -0.026644 0.00035747" />
+    <parent link="tibia2l" />
+    <child link="feet2" />
+    <axis xyz="0.70941 0.70479 0" />
+    <limit lower="-0.785" upper="0.785" effort="0" velocity="10" />
+    <dynamics damping="0.2" friction="0.05" />
+    <safety_controller soft_upper_limit="0.7" soft_lower_limit="-0.7" k_position="5" k_velocity="0.1" />
+  </joint>
+  <link name="servo31">
+    <inertial>
+      <origin xyz="-0.322559768578556 0.172301038422271 0.0251678185355064" rpy="0 0 0" />
+      <mass value="0.0240984569067207" />
+      <inertia ixx="6.83203605327443E-06" ixy="1.68294919971701E-06" ixz="3.92275637109243E-07" iyy="6.79866833186458E-06" iyz="-3.96179643711421E-07" izz="5.61091494064439E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo31.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.231 0.510 0.961 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo31.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="base_servo31" type="fixed">
+    <origin xyz="0.022459 -0.037253 0.013934" rpy="1.5708 0 0" />
+    <parent link="base_link" />
+    <child link="servo31" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="coxa3l">
+    <inertial>
+      <origin xyz="-0.0317835313989139 0.023129925258272 0.0184727579065642" rpy="0 0 0" />
+      <mass value="0.0210998935981904" />
+      <inertia ixx="1.77344718470842E-05" ixy="3.48878891820263E-06" ixz="-1.73447234745314E-07" iyy="2.13052910445637E-05" iyz="3.93407874910201E-07" izz="1.11184033420276E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/coxa3l.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.231 0.510 0.961 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/coxa3l.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="coxa3j" type="revolute">
+    <origin xyz="-0.32905 0.17885 0" rpy="0 0 -0.017716" />
+    <parent link="servo31" />
+    <child link="coxa3l" />
+    <axis xyz="0 0 1" />
+    <ros2_control><joint name="coxa3j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="servo32">
+    <inertial>
+      <origin xyz="-0.36402703192144 0.221609020505428 0.0194140519891027" rpy="0 0 0" />
+      <mass value="0.0328373418613514" />
+      <inertia ixx="8.91392891132649E-06" ixy="-2.96887244001044E-06" ixz="2.48695121742583E-07" iyy="8.98362999292879E-06" iyz="2.45792508030005E-07" izz="8.26690043437844E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo32.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.063 0.722 0.506 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo32.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="coxa3l_servo32" type="fixed">
+    <origin xyz="0.3296 -0.17792 5E-05" rpy="0 0 0.002602" />
+    <parent link="coxa3l" />
+    <child link="servo32" />
+    <axis xyz="0 0 0" />
+  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="femur3l">
+    <inertial>
+      <origin xyz="-0.0966035303352529 -0.0328010961033038 -0.000197854361006805" rpy="0 0 0" />
+      <mass value="0.0192528164541752" />
+      <inertia ixx="1.48542336537032E-05" ixy="1.03179934602758E-06" ixz="1.09104984055704E-07" iyy="1.41644323944253E-05" iyz="-5.45034950054486E-08" izz="2.80037825385083E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/femur3l.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.063 0.722 0.506 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/femur3l.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="femur3j" type="revolute">
+    <origin xyz="-0.30304 0.28189 0.0099194" rpy="0 0 -0.002602" />
+    <parent link="servo32" />
+    <child link="femur3l" />
+    <axis xyz="0.70941 0.70479 0" />
+    <ros2_control><joint name="femur3j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint>
+  <link name="servo33">
+    <inertial>
+      <origin xyz="-0.0349610352240036 -0.0215173445743047 -1.98926531113364E-05" rpy="0 0 0" />
+      <mass value="0.0241727529161616" />
+      <inertia ixx="4.85376649444644E-06" ixy="2.4863949506395E-07" ixz="-5.91841932511845E-09" iyy="5.92686003439328E-06" iyz="4.34910640051633E-09" izz="8.53499867937074E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo33.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.231 0.510 0.961 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo33.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="tibia3j" type="revolute">
+    <origin xyz="-0.095454 0.032033 0" rpy="0.010315 0.010194 0.0026546" />
+    <parent link="femur3l" />
+    <child link="servo33" />
+    <axis xyz="0.71124 0.70294 0" />
+    <ros2_control><joint name="tibia3j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="tibia3l">
+    <inertial>
+      <origin xyz="-0.455068888121498 0.298635968504784 0.015623886049526" rpy="0 0 0" />
+      <mass value="0.0203799763971176" />
+      <inertia ixx="1.67743465428212E-05" ixy="1.06772005244593E-05" ixz="-2.53160593190296E-06" iyy="1.34347154389895E-05" iyz="1.93830131307768E-06" izz="2.55169524749023E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/tibia3l.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/tibia3l.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="servo33_tibia3l" type="fixed">
+    <origin xyz="0.39824 -0.31476 -0.0085515" rpy="-0.001929 -0.0019164 -0.0026002" />
+    <parent link="servo33" />
+    <child link="tibia3l" />
+    <axis xyz="0 0 0" />
+  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="feet3">
+    <inertial>
+      <origin xyz="-0.0196829574559434 -0.0110814477463609 -0.00520049734948997" rpy="0 0 0" />
+      <mass value="0.0030798285900615" />
+      <inertia ixx="1.75255773717962E-07" ixy="-3.15913818549338E-08" ixz="6.25915500596758E-09" iyy="1.75668976758321E-07" iyz="-6.29889886929323E-09" izz="2.05025333683034E-07" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/feet3.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/feet3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="feet3j" type="revolute">
+    <origin xyz="-0.49356 0.37534 -0.013525" rpy="-0.022682 -0.022528 0.00025552" />
+    <parent link="tibia3l" />
+    <child link="feet3" />
+    <axis xyz="0.70941 0.70479 0" />
+    <limit lower="-0.785" upper="0.785" effort="0" velocity="10" />
+    <dynamics damping="0.2" friction="0.05" />
+    <safety_controller soft_upper_limit="0.7" soft_lower_limit="-0.7" k_position="5" k_velocity="0.1" />
+  </joint>
+  <link name="servo41">
+    <inertial>
+      <origin xyz="-0.175899322404769 0.172085580111593 0.0224908039781762" rpy="0 0 0" />
+      <mass value="0.0549993897912535" />
+      <inertia ixx="1.1663836738682E-05" ixy="-2.86078186669532E-06" ixz="-3.25761528920688E-07" iyy="1.16375078398475E-05" iyz="-3.27225737356337E-07" izz="9.22551281730925E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo41.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.231 0.510 0.961 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo41.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="base_servo41" type="fixed">
+    <origin xyz="0.022459 -0.037253 0.013934" rpy="1.5708 0 0" />
+    <parent link="base_link" />
+    <child link="servo41" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="coxa4l">
+    <inertial>
+      <origin xyz="-0.0317835326511136 0.0231299251838518 0.0172727578450551" rpy="0 0 0" />
+      <mass value="0.0210998952855894" />
+      <inertia ixx="1.77344722682222E-05" ixy="3.48878893322265E-06" ixz="-1.73447105967461E-07" iyy="2.13052922004781E-05" iyz="3.93407988034353E-07" izz="1.11184038453929E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/coxa4l.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.231 0.510 0.961 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/coxa4l.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="coxa4j" type="revolute">
+    <origin xyz="-0.16913 0.1789 0" rpy="0 0 -1.6096" />
+    <parent link="servo41" />
+    <child link="coxa4l" />
+    <axis xyz="0 0 1" />
+    <ros2_control><joint name="coxa4j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="servo42">
+    <inertial>
+      <origin xyz="-0.36402703193112 0.221609020509639 0.019414051862226" rpy="0 0 0" />
+      <mass value="0.0328373418730203" />
+      <inertia ixx="8.9139289130498E-06" ixy="-2.9688724402552E-06" ixz="2.48695119875394E-07" iyy="8.98362999722345E-06" iyz="2.45792509805699E-07" izz="8.26690043596187E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo42.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.063 0.722 0.506 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo42.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="coxa4l_servo42" type="fixed">
+    <origin xyz="0.32951 -0.178 -0.0012" rpy="0 0 0.002602" />
+    <parent link="coxa4l" />
+    <child link="servo42" />
+    <axis xyz="0 0 0" />
+  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="femur4l">
+    <inertial>
+      <origin xyz="-0.0362625840947357 0.0271468708444762 -0.000197851971891407" rpy="0 0 0" />
+      <mass value="0.0192528102748715" />
+      <inertia ixx="1.48542304218195E-05" ixy="1.03180044791302E-06" ixz="1.09104558451051E-07" iyy="1.4164430046992E-05" iyz="-5.45031216816129E-08" izz="2.80037773201219E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/femur4l.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.063 0.722 0.506 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/femur4l.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="femur4j" type="revolute">
+    <origin xyz="-0.36354 0.22209 0.0099194" rpy="-0.0033127 -0.0032911 -0.0025966" />
+    <parent link="servo42" />
+    <child link="femur4l" />
+    <axis xyz="0.70941 0.70479 0" />
+    <ros2_control><joint name="femur4j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint>
+  <link name="servo43">
+    <inertial>
+      <origin xyz="-0.00656986935940312 0.00654250971484877 -1.98928306326326E-05" rpy="0 0 0" />
+      <mass value="0.0241727620251609" />
+      <inertia ixx="4.85376822564604E-06" ixy="2.48640685720955E-07" ixz="-5.91909079056509E-09" iyy="5.92686155066159E-06" iyz="4.34985828720764E-09" izz="8.53500125890651E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo43.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.231 0.510 0.961 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/servo43.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="tibia4j" type="revolute">
+    <origin xyz="-0.063431 0.063847 0" rpy="0.0070845 0.0070017 0.0026268" />
+    <parent link="femur4l" />
+    <child link="servo43" />
+    <axis xyz="0.71124 0.70294 0" />
+    <ros2_control><joint name="tibia4j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="tibia4l">
+    <inertial>
+      <origin xyz="-0.455224144408688 0.29811671894911 0.0125394801599297" rpy="0 0 0" />
+      <mass value="0.0203799723988213" />
+      <inertia ixx="1.67743452404399E-05" ixy="1.06771992685417E-05" ixz="-2.53160577115923E-06" iyy="1.34347132979719E-05" iyz="1.9383012776708E-06" izz="2.55169492707067E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/tibia4l.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/tibia4l.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="servo43_tibia4l" type="fixed">
+    <origin xyz="0.42683 -0.28614 -0.006835" rpy="0 0 -0.002602" />
+    <parent link="servo43" />
+    <child link="tibia4l" />
+    <axis xyz="0 0 0" />
+  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="feet4">
+    <inertial>
+      <origin xyz="-0.00489833883163776 0.00360688621506011 -0.00520049441859904" rpy="0 0 0" />
+      <mass value="0.0030798304332486" />
+      <inertia ixx="1.75255812358691E-07" ixy="-3.1591384749421E-08" ixz="6.25919450854644E-09" iyy="1.75669056157634E-07" iyz="-6.2988979453629E-09" izz="2.05025375613724E-07" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/feet4.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/feet4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="feet4j" type="revolute">
+    <origin xyz="-0.5085 0.36013 -0.01661" rpy="-0.031213 -0.030995 0.00048382" />
+    <parent link="tibia4l" />
+    <child link="feet4" />
+    <axis xyz="0.70941 0.70479 0" />
+    <limit lower="-0.785" upper="0.785" effort="0" velocity="10" />
+    <dynamics damping="0.2" friction="0.05" />
+    <safety_controller soft_upper_limit="0.7" soft_lower_limit="-0.7" k_position="5" k_velocity="0.1" />
+  </joint>
+  <link name="cambase">
+    <inertial>
+      <origin xyz="-4.85972373454047E-13 0.00363282726513761 -0.00280912601207582" rpy="0 0 0" />
+      <mass value="0.00217028149426883" />
+      <inertia ixx="2.67489404265614E-07" ixy="-1.27171708971365E-18" ixz="3.32001644083873E-17" iyy="2.14887158536916E-07" iyz="-7.35015121718887E-09" izz="4.59393361071686E-07" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/cambase.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.960 0.620 0.043 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/cambase.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="base_cambase" type="fixed">
+    <origin xyz="-0.158352952588617 -0.067572182853491 0.129818565608473" rpy="1.57079632679491 1.56559228897925 -3.14159265358978" />
+    <parent link="base_link" />
+    <child link="cambase" />
+    <axis xyz="0 0 0" />
+  <ros2_control><joint name="base_cambase"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="caml1">
+    <inertial>
+      <origin xyz="-0.013516039389848 -0.0151119450257868 -0.0157339735136445" rpy="0 0 0" />
+      <mass value="0.0231834131739146" />
+      <inertia ixx="3.49484842949337E-06" ixy="-5.13684784589831E-07" ixz="1.64438290748317E-07" iyy="3.13440598348059E-06" iyz="1.56651144865674E-07" izz="4.21531812902304E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/caml1.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.960 0.620 0.043 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/caml1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="cambase_caml1" type="revolute">
+    <origin xyz="0 0 0" rpy="0.52319 -0.42844 0.61122" />
+    <parent link="cambase" />
+    <child link="caml1" />
+    <axis xyz="0.41546 0.45448 0.78793" />
+    <ros2_control><joint name="cambase_caml1"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="caml2">
+    <inertial>
+      <origin xyz="-0.00829787092843479 -0.00125257693634678 0.0034961726278622" rpy="0 0 0" />
+      <mass value="0.0209078266382902" />
+      <inertia ixx="1.88622426776458E-06" ixy="-9.79229834524731E-08" ixz="2.84219026709425E-07" iyy="2.17194884551475E-06" iyz="7.17831496739944E-09" izz="3.09410298894122E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/caml2.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.960 0.620 0.043 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/caml2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="caml1_caml2" type="revolute">
+    <origin xyz="-0.032105 -0.035121 -0.016879" rpy="0 -0.89729 0.83023" />
+    <parent link="caml1" />
+    <child link="caml2" />
+    <axis xyz="0 1 0" />
+    <ros2_control><joint name="caml1_caml2"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="caml">
+    <inertial>
+      <origin xyz="0.00136224010866628 -0.000831992864671033 2.35922392732846E-15" rpy="0 0 0" />
+      <mass value="0.00245642216350232" />
+      <inertia ixx="1.81975806027427E-07" ixy="3.81792745135696E-09" ixz="-1.62573370771801E-20" iyy="9.77136681158312E-08" iyz="4.2313131765443E-21" izz="9.60989355374431E-08" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/caml.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.960 0.620 0.043 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/caml.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="camj" type="fixed">
+    <origin xyz="-0.01155 -0.00096998 0.0108" rpy="1.5663 -1.5708 -3.1339" />
+    <parent link="caml2" />
+    <child link="caml" />
+    <axis xyz="0 0 0" />
+  <ros2_control><joint name="camj"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  <link name="cell1">
+    <inertial>
+      <origin xyz="-0.244694104887168 0.160666796035246 -0.00618055061929496" rpy="0 0 0" />
+      <mass value="0.0499853466405161" />
+      <inertia ixx="2.0244065389409E-06" ixy="3.53239426414076E-20" ixz="2.94496692564637E-15" iyy="1.86112107324855E-05" iyz="-1.81954433898578E-24" izz="1.86112107324855E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/cell1.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/cell1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="base_cell1" type="fixed">
+    <origin xyz="0.0224591225389912 -0.0372527334765431 0.0139338253382222" rpy="1.5707963267949 0 0" />
+    <parent link="base_link" />
+    <child link="cell1" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="cell2">
+    <inertial>
+      <origin xyz="-0.21605789587199 0.1023675823468 0.0408194493855248" rpy="0 0 0" />
+      <mass value="0.0499853466405161" />
+      <inertia ixx="1.86107615325504E-05" ixy="-8.63167978228236E-08" ixz="1.49335843962057E-17" iyy="2.02485573887598E-06" iyz="2.86959022521827E-15" izz="1.86112107324855E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/cell2.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/cell2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="base_cell2" type="fixed">
+    <origin xyz="0.0224591225389912 -0.0372527334765431 0.0139338253382222" rpy="1.5707963267949 0 0" />
+    <parent link="base_link" />
+    <child link="cell2" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="lipo">
+    <inertial>
+      <origin xyz="-0.258174830572919 0.263999232932751 -0.0477397920000414" rpy="0 0 0" />
+      <mass value="0.349997884499999" />
+      <inertia ixx="0.00101233971442587" ixy="-1.58525796998738E-13" ixz="-9.71976093727736E-15" iyy="0.00011999094140275" iyz="9.71450148261008E-17" izz="0.000955873389059873" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/lipo.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/lipo.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="base_lipo" type="fixed">
+    <origin xyz="0.03786685284412 -0.28824701343813 0.083860829373268" rpy="-3.14159265358973 0 -1.5707963267949" />
+    <parent link="base_link" />
+    <child link="lipo" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="imul">
+    <inertial>
+      <origin xyz="-0.213501631412028 0.113837295066825 0.0161781119117345" rpy="0 0 0" />
+      <mass value="0.002937161766458" />
+      <inertia ixx="1.52539886110946E-07" ixy="2.2856887179168E-12" ixz="-8.05576700837749E-11" iyy="1.23745165873367E-07" iyz="3.85175465800715E-12" izz="2.74693453874094E-07" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/imul.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/imul.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="imuj" type="fixed">
+    <origin xyz="0.0224591225389912 -0.0372527334765431 0.0139338253382222" rpy="1.5707963267949 0 0" />
+    <parent link="base_link" />
+    <child link="imul" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="cell3">
+    <inertial>
+      <origin xyz="0.0325 5.77030437320936E-12 -5.55111512312578E-17" rpy="0 0 0" />
+      <mass value="0.0499853466405161" />
+      <inertia ixx="2.0244065389409E-06" ixy="-2.94495377364414E-15" ixz="3.32709575907461E-20" iyy="1.86112107324855E-05" iyz="5.89761258692036E-30" izz="1.86112107324855E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/cell3.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/cell3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="base_cell3" type="fixed">
+    <origin xyz="-0.254734982348177 -0.031072182877828 0.088600621373457" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="cell3" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="stepper">
+    <inertial>
+      <origin xyz="-0.249087331832357 0.116064652826235 0.0263763295335413" rpy="0 0 0" />
+      <mass value="0.207103571205244" />
+      <inertia ixx="4.95697655016273E-05" ixy="-3.13286961279758E-13" ixz="1.34899285182874E-09" iyy="4.9569645101094E-05" iyz="-3.50862704404448E-12" izz="5.8177968963898E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/stepper.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/stepper.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="base_stepper" type="fixed">
+    <origin xyz="0.022459 -0.037253 0.013934" rpy="1.5708 0 0" />
+    <parent link="base_link" />
+    <child link="stepper" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="coupling">
+    <inertial>
+      <origin xyz="-0.0222071129770512 5.34128297147163E-12 -1.27708954522632E-12" rpy="0 0 0" />
+      <mass value="0.0173973531530402" />
+      <inertia ixx="5.50419861200883E-07" ixy="5.24434323804791E-16" ixz="-1.25398434632474E-16" iyy="2.73088742482146E-06" iyz="0" izz="2.73088742482146E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/coupling.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/coupling.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="base_coupling" type="revolute">
+    <origin xyz="-0.24909 0.11606 0.045789" rpy="1.0356 1.5708 0" />
+    <parent link="stepper" />
+    <child link="coupling" />
+    <axis xyz="1 0 0" />
+    <limit lower="-6.28" upper="6.25" effort="0.5" velocity="0.6" />
+    <dynamics damping="0.02" friction="0.01" />
+    <safety_controller soft_upper_limit="6" soft_lower_limit="-6" k_position="5" k_velocity="0.2" />
+  </joint>
+  <link name="flange">
+    <inertial>
+      <origin xyz="-2.90384383205833E-12 7.90534304684343E-13 0.0121683891910861" rpy="0 0 0" />
+      <mass value="0.0165181718451683" />
+      <inertia ixx="2.60100400176592E-06" ixy="1.58818677610181E-21" ixz="5.68956069101515E-17" iyy="2.60100400176592E-06" iyz="-1.54692570472504E-17" izz="2.36255703355926E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/flange.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.659 0.333 0.969 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/flange.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="coupling_flange" type="fixed">
+    <origin xyz="-0.044 0 0" rpy="1.5708 -0.50045 -1.5708" />
+    <parent link="coupling" />
+    <child link="flange" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="lidarmount">
+    <inertial>
+      <origin xyz="-0.248417640151496 0.114901144087754 0.12950047438279" rpy="0 0 0" />
+      <mass value="0.0199629448790884" />
+      <inertia ixx="9.39303887331325E-06" ixy="-1.33283096989708E-06" ixz="-5.30310010911762E-08" iyy="1.0942656994844E-05" iyz="9.2159975733057E-08" izz="6.50210639657573E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/lidarmount.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.659 0.333 0.969 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/lidarmount.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="flange_lidarmount" type="fixed">
+    <origin xyz="0.24909 -0.11606 -0.089789" rpy="0 0 0" />
+    <parent link="flange" />
+    <child link="lidarmount" />
+    <axis xyz="0 0 0" />
+  <ros2_control><joint name="flange_lidarmount"><hardware_interface>EffortJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="2.5" velocity="3.5" lower="-6.283" upper="6.283" /><dynamics damping="0.02" friction="0.01" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-6.283" soft_upper_limit="6.283" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="2.5" velocity="3.5" lower="-6.283" upper="6.283" /><dynamics damping="0.02" friction="0.01" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-6.283" soft_upper_limit="6.283" /></joint>
+  <link name="lidarl">
+    <inertial>
+      <origin xyz="-0.256143176414863 0.1283285607983 0.143452449615597" rpy="0 0 0" />
+      <mass value="0.109998846473485" />
+      <inertia ixx="4.02318810582621E-05" ixy="-7.76004870962997E-06" ixz="-7.75960890763623E-12" iyy="4.92541598732305E-05" iyz="-4.46080940664635E-12" izz="3.57666279058567E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/lidarl.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.659 0.333 0.969 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/lidarl.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="lidarmount_lidar" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="lidarmount" />
+    <child link="lidarl" />
+    <axis xyz="0 0 0" />
+  <ros2_control><joint name="lidarmount_lidar"><hardware_interface>EffortJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="2.5" velocity="3.5" lower="-6.283" upper="6.283" /><dynamics damping="0.02" friction="0.01" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-6.283" soft_upper_limit="6.283" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="2.5" velocity="3.5" lower="-6.283" upper="6.283" /><dynamics damping="0.02" friction="0.01" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-6.283" soft_upper_limit="6.283" /></joint>
+  <link name="encoder">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0" />
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/encoder.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.616 0.639 0.686 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reccobot_description/meshes/encoder.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="base_encoder" type="fixed">
+    <origin xyz="0.0224591225389912 -0.0372527334765431 0.0139338253382222" rpy="1.5707963267949 0 0" />
+    <parent link="base_link" />
+    <child link="encoder" />
+    <axis xyz="0 0 0" />
+  </joint>
+</robot>

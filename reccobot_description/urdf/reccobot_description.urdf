@@ -1,5 +1,24 @@
 <?xml version='1.0' encoding='utf-8'?>
 <robot name="reccobot_description">
+  <!-- World link - fixed reference frame -->
+  <link name="world"/>
+  
+  <!-- 
+    ROTATION ADJUSTMENT: 
+    To modify the robot's orientation in the world frame, change the 'rpy' values below.
+    Current: rpy="0 0 1.5708" rotates the robot 90 degrees around Z-axis
+    Format: rpy="roll pitch yaw" in radians
+    Common values: 
+      - 90 degrees = 1.5708 radians
+      - 180 degrees = 3.14159 radians
+      - -90 degrees = -1.5708 radians
+  -->
+  <joint name="world_to_base" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0" rpy="0 0 1.5708"/>
+  </joint>
+  
   <link name="base_link">
     <inertial>
       <origin xyz="-0.227493721449308 0.129991746243675 0.0555028320183144" rpy="0 0 0" />

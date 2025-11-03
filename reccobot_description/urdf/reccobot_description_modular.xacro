@@ -1,0 +1,711 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="reccobot_description">
+  <xacro:property name="mesh_dir" value="package://reccobot_description/meshes"/>
+  <xacro:property name="color_base" value="0.960 0.620 0.043 1.0"/>
+  <xacro:property name="color_servo_blue" value="0.231 0.510 0.961 1.0"/>
+  <xacro:property name="color_servo_green" value="0.063 0.722 0.506 1.0"/>
+  <xacro:property name="color_struct_gray" value="0.616 0.639 0.686 1.0"/>
+  <xacro:property name="color_sensor_purple" value="0.659 0.333 0.969 1.0"/>
+
+  <!-- Centralized hardware interface names -->
+  <xacro:property name="hardware_interface_position" value="PositionJointInterface"/>
+  <xacro:property name="hardware_interface_effort" value="EffortJointInterface"/>
+
+  <xacro:property name="joint_k_position_active" value="20.0"/>
+  <xacro:property name="joint_k_velocity_active" value="10.0"/>
+
+  <xacro:property name="joint_limit_servo_lower" value="-1.396"/>
+  <xacro:property name="joint_limit_servo_upper" value="1.396"/>
+  <xacro:property name="joint_effort_servo" value="1.2"/>
+  <xacro:property name="joint_velocity_servo" value="6.0"/>
+  <xacro:property name="joint_damping_servo" value="0.04"/>
+  <xacro:property name="joint_friction_servo" value="0.02"/>
+
+  <xacro:property name="joint_limit_femur_lower" value="-1.57"/>
+  <xacro:property name="joint_limit_femur_upper" value="1.57"/>
+  <xacro:property name="joint_effort_femur" value="2.0"/>
+  <xacro:property name="joint_velocity_femur" value="7.5"/>
+  <xacro:property name="joint_damping_femur" value="0.05"/>
+  <xacro:property name="joint_friction_femur" value="0.03"/>
+
+  <xacro:property name="joint_k_position_passive" value="5"/>
+  <xacro:property name="joint_k_velocity_passive" value="0.1"/>
+
+  <xacro:property name="joint_limit_feet_lower" value="-0.785"/>
+  <xacro:property name="joint_limit_feet_upper" value="0.785"/>
+  <xacro:property name="joint_effort_feet" value="0"/>
+  <xacro:property name="joint_velocity_feet" value="10"/>
+  <xacro:property name="joint_damping_feet" value="0.2"/>
+  <xacro:property name="joint_friction_feet" value="0.05"/>
+  <xacro:property name="joint_soft_limit_feet_lower" value="-0.7"/>
+  <xacro:property name="joint_soft_limit_feet_upper" value="0.7"/>
+
+  <xacro:property name="joint_limit_camera_lower" value="-1.396"/>
+  <xacro:property name="joint_limit_camera_upper" value="1.396"/>
+  <xacro:property name="joint_effort_camera" value="0.8"/>
+  <xacro:property name="joint_velocity_camera" value="5.0"/>
+  <xacro:property name="joint_damping_camera" value="0.03"/>
+  <xacro:property name="joint_friction_camera" value="0.015"/>
+
+  <xacro:property name="joint_limit_lidar_lower" value="-6.283"/>
+  <xacro:property name="joint_limit_lidar_upper" value="6.283"/>
+  <xacro:property name="joint_effort_lidar" value="2.5"/>
+  <xacro:property name="joint_velocity_lidar" value="3.5"/>
+  <xacro:property name="joint_damping_lidar" value="0.02"/>
+  <xacro:property name="joint_friction_lidar" value="0.01"/>
+
+  <xacro:property name="joint_limit_coupling_lower" value="-6.28"/>
+  <xacro:property name="joint_limit_coupling_upper" value="6.25"/>
+  <xacro:property name="joint_effort_coupling" value="0.5"/>
+  <xacro:property name="joint_velocity_coupling" value="0.6"/>
+  <xacro:property name="joint_damping_coupling" value="0.02"/>
+  <xacro:property name="joint_friction_coupling" value="0.01"/>
+  <xacro:property name="joint_soft_limit_coupling_lower" value="-6"/>
+  <xacro:property name="joint_soft_limit_coupling_upper" value="6"/>
+  <xacro:property name="joint_k_velocity_coupling" value="0.2"/>
+
+  <!-- ================================================================== -->
+  <!-- Generic macros to keep the description DRY and easier to mod.      -->
+  <!-- ================================================================== -->
+  <xacro:macro name="mesh_link" params="name mesh rgba origin_xyz:='0 0 0' origin_rpy:='0 0 0'">
+    <link name="${name}">
+      <xacro:insert_block name="inertial"/>
+      <visual>
+        <origin xyz="${origin_xyz}" rpy="${origin_rpy}"/>
+        <geometry>
+          <mesh filename="${mesh}"/>
+        </geometry>
+        <material name="${name}_mat">
+          <color rgba="${rgba}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="${origin_xyz}" rpy="${origin_rpy}"/>
+        <geometry>
+          <mesh filename="${mesh}"/>
+        </geometry>
+      </collision>
+      <xacro:insert_block name="extras"/>
+    </link>
+  </xacro:macro>
+
+  <xacro:macro name="fixed_joint" params="name parent child origin_xyz origin_rpy axis:='0 0 0'">
+    <joint name="${name}" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${child}"/>
+      <origin xyz="${origin_xyz}" rpy="${origin_rpy}"/>
+      <axis xyz="${axis}"/>
+      <xacro:insert_block name="extras"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="actuated_joint" params="name type:='revolute' parent child origin_xyz origin_rpy axis interface:='PositionJointInterface' lower upper effort velocity damping friction soft_lower soft_upper k_position:='${joint_k_position_active}' k_velocity:='${joint_k_velocity_active}'">
+    <joint name="${name}" type="${type}">
+      <parent link="${parent}"/>
+      <child link="${child}"/>
+      <origin xyz="${origin_xyz}" rpy="${origin_rpy}"/>
+      <axis xyz="${axis}"/>
+      <limit lower="${lower}" upper="${upper}" effort="${effort}" velocity="${velocity}"/>
+      <dynamics damping="${damping}" friction="${friction}"/>
+      <safety_controller soft_lower_limit="${soft_lower}" soft_upper_limit="${soft_upper}" k_position="${k_position}" k_velocity="${k_velocity}"/>
+      <xacro:insert_block name="extras"/>
+    </joint>
+    <ros2_control>
+      <joint name="${name}">
+        <hardware_interface>${interface}</hardware_interface>
+        <calibration rising="0.0" falling="0.0"/>
+        <limit effort="${effort}" velocity="${velocity}" lower="${lower}" upper="${upper}"/>
+        <dynamics damping="${damping}" friction="${friction}"/>
+        <safety_controller k_position="${k_position}" k_velocity="${k_velocity}" soft_lower_limit="${soft_lower}" soft_upper_limit="${soft_upper}"/>
+      </joint>
+    </ros2_control>
+    <calibration rising="0.0" falling="0.0"/>
+  </xacro:macro>
+
+  <xacro:macro name="passive_joint" params="name type:='revolute' parent child origin_xyz origin_rpy axis lower upper effort velocity damping friction soft_lower soft_upper k_position:='${joint_k_position_passive}' k_velocity:='${joint_k_velocity_passive}'">
+    <joint name="${name}" type="${type}">
+      <parent link="${parent}"/>
+      <child link="${child}"/>
+      <origin xyz="${origin_xyz}" rpy="${origin_rpy}"/>
+      <axis xyz="${axis}"/>
+      <limit lower="${lower}" upper="${upper}" effort="${effort}" velocity="${velocity}"/>
+      <dynamics damping="${damping}" friction="${friction}"/>
+      <safety_controller soft_lower_limit="${soft_lower}" soft_upper_limit="${soft_upper}" k_position="${k_position}" k_velocity="${k_velocity}"/>
+      <xacro:insert_block name="extras"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- ================================================================== -->
+  <!-- Robot description                                                  -->
+  <!-- ================================================================== -->
+
+  <link name="world"/>
+
+  <!-- === Base Assembly === -->
+  <xacro:mesh_link name="base_link" mesh="${mesh_dir}/base_link.STL" rgba="${color_base}">
+    <inertial>
+      <origin xyz="-0.22536 -0.06397 0.12957" rpy="0 0 0"/>
+      <mass value="0.21673"/>
+      <inertia ixx="0.00046806" ixy="1.2348E-05" ixz="2.9514E-06" iyy="0.00067187" iyz="1.3398E-06" izz="0.00091551"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:fixed_joint name="world_to_base" parent="world" child="base_link" origin_xyz="0 0 0" origin_rpy="-1.5708 0 0"/>
+
+  <!-- === Leg 1 === -->
+  <xacro:mesh_link name="servo11" mesh="${mesh_dir}/servo11.STL" rgba="${color_servo_blue}">
+    <inertial>
+      <origin xyz="-0.17622 0.060069 0.022478" rpy="0 0 0"/>
+      <mass value="0.055057"/>
+      <inertia ixx="1.166E-05" ixy="2.8712E-06" ixz="-3.1749E-07" iyy="1.1685E-05" iyz="3.1572E-07" izz="9.2502E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="coxa1l" mesh="${mesh_dir}/coxa1l.STL" rgba="${color_servo_blue}">
+    <inertial>
+      <origin xyz="-0.031783529731658 0.0231299258057219 0.0172727573242147" rpy="0 0 0"/>
+      <mass value="0.0210998931296677"/>
+      <inertia ixx="1.77344719326153E-05" ixy="3.48878926734278E-06" ixz="-1.73448229544293E-07" iyy="2.13052902677955E-05" iyz="3.93407587336972E-07" izz="1.11184022512421E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="servo12" mesh="${mesh_dir}/servo12.STL" rgba="${color_servo_green}">
+    <inertial>
+      <origin xyz="-0.364027031928889 0.221609020499465 0.0194140519398458" rpy="0 0 0"/>
+      <mass value="0.032837341863771"/>
+      <inertia ixx="8.91392891154251E-06" ixy="-2.96887244021664E-06" ixz="2.48695120478788E-07" iyy="8.98362999365117E-06" iyz="2.45792507834053E-07" izz="8.26690043502531E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="femur1l" mesh="${mesh_dir}/femur1l.STL" rgba="${color_servo_green}">
+    <inertial>
+      <origin xyz="-0.0969389150859866 -0.0331343043722141 -0.000197850701517746" rpy="0 0 0"/>
+      <mass value="0.019252812658229"/>
+      <inertia ixx="1.48542331366969E-05" ixy="1.03180072158057E-06" ixz="1.09104621244036E-07" iyy="1.41644288284789E-05" iyz="-5.45032620583719E-08" izz="2.8003778626815E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="servo13" mesh="${mesh_dir}/servo13.STL" rgba="${color_servo_blue}">
+    <inertial>
+      <origin xyz="-0.0350095850454116 -0.0215653267559031 -1.98928617279256E-05" rpy="0 0 0"/>
+      <mass value="0.0241727614673822"/>
+      <inertia ixx="4.85376814796249E-06" ixy="2.48640535301553E-07" ixz="-5.91906526276493E-09" iyy="5.92686146082808E-06" iyz="4.34982077248791E-09" izz="8.53500109133005E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="tibia1l" mesh="${mesh_dir}/tibia1l.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="-0.455256586442077 0.29810523231319 0.0133956395769309" rpy="0 0 0"/>
+      <mass value="0.0203799728923894"/>
+      <inertia ixx="1.67743453323067E-05" ixy="1.06771996699811E-05" ixz="-2.53160566182682E-06" iyy="1.34347140463777E-05" iyz="1.93830128872836E-06" izz="2.5516950009184E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="feet1" mesh="${mesh_dir}/feet1.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="-0.0201025875161129 -0.0114983438665156 -0.00520049603956912" rpy="0 0 0"/>
+      <mass value="0.003079829271407"/>
+      <inertia ixx="1.75255793017129E-07" ixy="-3.15913841474438E-08" ixz="6.25915989212759E-09" iyy="1.75668997697067E-07" iyz="-6.29890327276735E-09" izz="2.05025345317238E-07"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:fixed_joint name="base_servo11" parent="base_link" child="servo11" origin_xyz="0.022459 -0.037253 0.013934" origin_rpy="1.5708 0 0"/>
+
+  <xacro:actuated_joint name="coxa1j" parent="servo11" child="coxa1l" origin_xyz="-0.16941 0.053318 0" origin_rpy="0 0 3.1194" axis="0 0 1" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}" effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" damping="${joint_damping_servo}" friction="${joint_friction_servo}" soft_lower="${joint_limit_servo_lower}" soft_upper="${joint_limit_servo_upper}"/>
+
+  <xacro:fixed_joint name="coxa1_servo12" parent="coxa1l" child="servo12" origin_xyz="0.3294 -0.17808 -0.0012" origin_rpy="0 0 0.002602">
+    <extras>
+      <calibration rising="0.0" falling="0.0"/>
+      <limit effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}"/>
+      <dynamics damping="${joint_damping_servo}" friction="${joint_friction_servo}"/>
+      <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_servo_lower}" soft_upper_limit="${joint_limit_servo_upper}"/>
+    </extras>
+  </xacro:fixed_joint>
+
+  <xacro:actuated_joint name="femur1j" parent="servo12" child="femur1l" origin_xyz="-0.3027 0.28222 0.0099194" origin_rpy="-0.0053339 -0.0052991 -0.0025879" axis="0.70941 0.70479 0" lower="${joint_limit_femur_lower}" upper="${joint_limit_femur_upper}" effort="${joint_effort_femur}" velocity="${joint_velocity_femur}" damping="${joint_damping_femur}" friction="${joint_friction_femur}" soft_lower="${joint_limit_femur_lower}" soft_upper="${joint_limit_femur_upper}"/>
+
+  <xacro:actuated_joint name="tibia1j" parent="femur1l" child="servo13" origin_xyz="-0.095741 0.031748 0" origin_rpy="0.0075394 0.0074512 0.0026301" axis="0.71124 0.70294 0" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}" effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" damping="${joint_damping_servo}" friction="${joint_friction_servo}" soft_lower="${joint_limit_servo_lower}" soft_upper="${joint_limit_servo_upper}"/>
+
+  <xacro:fixed_joint name="servo13_tibia1l" parent="servo13" child="tibia1l" origin_xyz="0.39838 -0.31423 -0.0076912" origin_rpy="0 0 -0.002602">
+    <extras>
+      <calibration rising="0.0" falling="0.0"/>
+      <limit effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}"/>
+      <dynamics damping="${joint_damping_servo}" friction="${joint_friction_servo}"/>
+      <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_servo_lower}" soft_upper_limit="${joint_limit_servo_upper}"/>
+    </extras>
+  </xacro:fixed_joint>
+
+  <xacro:passive_joint name="feet1j" parent="tibia1l" child="feet1" origin_xyz="-0.49335 0.37521 -0.015754" origin_rpy="-0.050665 -0.050271 0.001274" axis="0.70941 0.70479 0" lower="${joint_limit_feet_lower}" upper="${joint_limit_feet_upper}" effort="${joint_effort_feet}" velocity="${joint_velocity_feet}" damping="${joint_damping_feet}" friction="${joint_friction_feet}" soft_lower="${joint_soft_limit_feet_lower}" soft_upper="${joint_soft_limit_feet_upper}"/>
+
+  <!-- === Leg 2 === -->
+  <xacro:mesh_link name="servo21" mesh="${mesh_dir}/servo21.STL" rgba="${color_servo_blue}">
+    <inertial>
+      <origin xyz="-0.322289915553315 0.0600292971769946 0.0224779989169101" rpy="0 0 0"/>
+      <mass value="0.0550572632102972"/>
+      <inertia ixx="1.16849388814822E-05" ixy="-2.87122122969457E-06" ixz="3.15715740427033E-07" iyy="1.16596364253512E-05" iyz="3.17489347279061E-07" izz="9.25022418211167E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="coxa2l" mesh="${mesh_dir}/coxa2l.STL" rgba="${color_servo_blue}">
+    <inertial>
+      <origin xyz="-0.0317835318991771 0.0231299252235586 0.0172727578917613" rpy="0 0 0"/>
+      <mass value="0.0210998942749586"/>
+      <inertia ixx="1.77344720147065E-05" ixy="3.48878892525706E-06" ixz="-1.73447181179619E-07" iyy="2.13052915102114E-05" iyz="3.93407923297153E-07" izz="1.11184035463231E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="servo22" mesh="${mesh_dir}/servo22.STL" rgba="${color_servo_green}">
+    <inertial>
+      <origin xyz="-0.364027031922669 0.221609020500305 0.0194140520671123" rpy="0 0 0"/>
+      <mass value="0.0328373418660146"/>
+      <inertia ixx="8.91392891208005E-06" ixy="-2.9688724401605E-06" ixz="2.48695119849567E-07" iyy="8.98362999447983E-06" iyz="2.45792509417182E-07" izz="8.26690043512454E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="femur2l" mesh="${mesh_dir}/femur2l.STL" rgba="${color_servo_green}">
+    <inertial>
+      <origin xyz="-0.0354343003421015 0.0279697703671011 -0.000197862210528851" rpy="0 0 0"/>
+      <mass value="0.0192528114858659"/>
+      <inertia ixx="1.48542313056443E-05" ixy="1.03179957500865E-06" ixz="1.09103927008919E-07" iyy="1.41644334268148E-05" iyz="-5.45045782090742E-08" izz="2.80037820959128E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="servo23" mesh="${mesh_dir}/servo23.STL" rgba="${color_servo_blue}">
+    <inertial>
+      <origin xyz="-0.00573943365860688 0.00736325444199537 -1.9892851393262E-05" rpy="0 0 0"/>
+      <mass value="0.0241727614204212"/>
+      <inertia ixx="4.85376814165641E-06" ixy="2.48640584019119E-07" ixz="-5.91911876257097E-09" iyy="5.92686151814361E-06" iyz="4.34984316824873E-09" izz="8.53500115708355E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="tibia2l" mesh="${mesh_dir}/tibia2l.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="-0.465322797606374 0.298108957138989 0.00402166501611856" rpy="0 0 0"/>
+      <mass value="0.0203799805545255"/>
+      <inertia ixx="1.67743481145259E-05" ixy="1.06772013679818E-05" ixz="-2.53160639755251E-06" iyy="1.34347166284829E-05" iyz="1.93830138263256E-06" izz="2.55169551452292E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="feet2" mesh="${mesh_dir}/feet2.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="-0.00469227252125851 0.00381160986770518 -0.00520049499209307" rpy="0 0 0"/>
+      <mass value="0.00307983009444251"/>
+      <inertia ixx="1.75255802828977E-07" ixy="-3.15913836042488E-08" ixz="6.2591920075703E-09" iyy="1.75669046280165E-07" iyz="-6.29889609442229E-09" izz="2.05025370595101E-07"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:fixed_joint name="base_servo21" parent="base_link" child="servo21" origin_xyz="0.022459 -0.037253 0.013934" origin_rpy="1.5708 0 0"/>
+
+  <xacro:actuated_joint name="coxa2j" parent="servo21" child="coxa2l" origin_xyz="-0.32904 0.053225 0" origin_rpy="0 0 1.5445" axis="0 0 1" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}" effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" damping="${joint_damping_servo}" friction="${joint_friction_servo}" soft_lower="${joint_limit_servo_lower}" soft_upper="${joint_limit_servo_upper}"/>
+
+  <xacro:fixed_joint name="coxa2l_servo2l" parent="coxa2l" child="servo22" origin_xyz="0.32962 -0.17788 -0.00115" origin_rpy="0 0 0.002602">
+    <extras>
+      <calibration rising="0.0" falling="0.0"/>
+      <limit effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}"/>
+      <dynamics damping="${joint_damping_servo}" friction="${joint_friction_servo}"/>
+      <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_servo_lower}" soft_upper_limit="${joint_limit_servo_upper}"/>
+    </extras>
+  </xacro:fixed_joint>
+
+  <xacro:actuated_joint name="femur2j" parent="servo22" child="femur2l" origin_xyz="-0.36437 0.22127 0.0099194" origin_rpy="0.006709 0.0066652 -0.0025797" axis="0.70941 0.70479 0" lower="${joint_limit_femur_lower}" upper="${joint_limit_femur_upper}" effort="${joint_effort_femur}" velocity="${joint_velocity_femur}" damping="${joint_damping_femur}" friction="${joint_friction_femur}" soft_lower="${joint_limit_femur_lower}" soft_upper="${joint_limit_femur_upper}"/>
+
+  <xacro:actuated_joint name="tibia2j" parent="femur2l" child="servo23" origin_xyz="-0.063431 0.063847 0" origin_rpy="0.010613 0.010489 0.0026577" axis="0.71124 0.70294 0" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}" effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" damping="${joint_damping_servo}" friction="${joint_friction_servo}" soft_lower="${joint_limit_servo_lower}" soft_upper="${joint_limit_servo_upper}"/>
+
+  <xacro:fixed_joint name="servo23_tibia2j" parent="servo23" child="tibia2l" origin_xyz="0.43771 -0.28536 0.0016775" origin_rpy="0 0 -0.002602">
+    <extras>
+      <calibration rising="0.0" falling="0.0"/>
+      <limit effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}"/>
+      <dynamics damping="${joint_damping_servo}" friction="${joint_friction_servo}"/>
+      <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_servo_lower}" soft_upper_limit="${joint_limit_servo_upper}"/>
+    </extras>
+  </xacro:fixed_joint>
+
+  <xacro:passive_joint name="feet2j" parent="tibia2l" child="feet2" origin_xyz="-0.51952 0.35922 -0.025128" origin_rpy="-0.026829 -0.026644 0.00035747" axis="0.70941 0.70479 0" lower="${joint_limit_feet_lower}" upper="${joint_limit_feet_upper}" effort="${joint_effort_feet}" velocity="${joint_velocity_feet}" damping="${joint_damping_feet}" friction="${joint_friction_feet}" soft_lower="${joint_soft_limit_feet_lower}" soft_upper="${joint_soft_limit_feet_upper}"/>
+
+  <!-- === Leg 3 === -->
+  <xacro:mesh_link name="servo31" mesh="${mesh_dir}/servo31.STL" rgba="${color_servo_blue}">
+    <inertial>
+      <origin xyz="-0.322559768578556 0.172301038422271 0.0251678185355064" rpy="0 0 0"/>
+      <mass value="0.0240984569067207"/>
+      <inertia ixx="6.83203605327443E-06" ixy="1.68294919971701E-06" ixz="3.92275637109243E-07" iyy="6.79866833186458E-06" iyz="-3.96179643711421E-07" izz="5.61091494064439E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="coxa3l" mesh="${mesh_dir}/coxa3l.STL" rgba="${color_servo_blue}">
+    <inertial>
+      <origin xyz="-0.0317835313989139 0.023129925258272 0.0184727579065642" rpy="0 0 0"/>
+      <mass value="0.0210998935981904"/>
+      <inertia ixx="1.77344718470842E-05" ixy="3.48878891820263E-06" ixz="-1.73447234745314E-07" iyy="2.13052910445637E-05" iyz="3.93407874910201E-07" izz="1.11184033420276E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="servo32" mesh="${mesh_dir}/servo32.STL" rgba="${color_servo_green}">
+    <inertial>
+      <origin xyz="-0.36402703192144 0.221609020505428 0.0194140519891027" rpy="0 0 0"/>
+      <mass value="0.0328373418613514"/>
+      <inertia ixx="8.91392891132649E-06" ixy="-2.96887244001044E-06" ixz="2.48695121742583E-07" iyy="8.98362999292879E-06" iyz="2.45792508030005E-07" izz="8.26690043437844E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="femur3l" mesh="${mesh_dir}/femur3l.STL" rgba="${color_servo_green}">
+    <inertial>
+      <origin xyz="-0.0966035303352529 -0.0328010961033038 -0.000197854361006805" rpy="0 0 0"/>
+      <mass value="0.0192528164541752"/>
+      <inertia ixx="1.48542336537032E-05" ixy="1.03179934602758E-06" ixz="1.09104984055704E-07" iyy="1.41644323944253E-05" iyz="-5.45034950054486E-08" izz="2.80037825385083E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="servo33" mesh="${mesh_dir}/servo33.STL" rgba="${color_servo_blue}">
+    <inertial>
+      <origin xyz="-0.0349610352240036 -0.0215173445743047 -1.98926531113364E-05" rpy="0 0 0"/>
+      <mass value="0.0241727529161616"/>
+      <inertia ixx="4.85376649444644E-06" ixy="2.4863949506395E-07" ixz="-5.91841932511845E-09" iyy="5.92686003439328E-06" iyz="4.34910640051633E-09" izz="8.53499867937074E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="tibia3l" mesh="${mesh_dir}/tibia3l.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="-0.455068888121498 0.298635968504784 0.015623886049526" rpy="0 0 0"/>
+      <mass value="0.0203799763971176"/>
+      <inertia ixx="1.67743465428212E-05" ixy="1.06772005244593E-05" ixz="-2.53160593190296E-06" iyy="1.34347154389895E-05" iyz="1.93830131307768E-06" izz="2.55169524749023E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="feet3" mesh="${mesh_dir}/feet3.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="-0.0196829574559434 -0.0110814477463609 -0.00520049734948997" rpy="0 0 0"/>
+      <mass value="0.0030798285900615"/>
+      <inertia ixx="1.75255773717962E-07" ixy="-3.15913818549338E-08" ixz="6.25915500596758E-09" iyy="1.75668976758321E-07" iyz="-6.29889886929323E-09" izz="2.05025333683034E-07"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:fixed_joint name="base_servo31" parent="base_link" child="servo31" origin_xyz="0.022459 -0.037253 0.013934" origin_rpy="1.5708 0 0"/>
+
+  <xacro:actuated_joint name="coxa3j" parent="servo31" child="coxa3l" origin_xyz="-0.32905 0.17885 0" origin_rpy="0 0 -0.017716" axis="0 0 1" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}" effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" damping="${joint_damping_servo}" friction="${joint_friction_servo}" soft_lower="${joint_limit_servo_lower}" soft_upper="${joint_limit_servo_upper}"/>
+
+  <xacro:fixed_joint name="coxa3l_servo32" parent="coxa3l" child="servo32" origin_xyz="0.3296 -0.17792 5e-05" origin_rpy="0 0 0.002602">
+    <extras>
+      <calibration rising="0.0" falling="0.0"/>
+      <limit effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}"/>
+      <dynamics damping="${joint_damping_servo}" friction="${joint_friction_servo}"/>
+      <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_servo_lower}" soft_upper_limit="${joint_limit_servo_upper}"/>
+    </extras>
+  </xacro:fixed_joint>
+
+  <xacro:actuated_joint name="femur3j" parent="servo32" child="femur3l" origin_xyz="-0.30304 0.28189 0.0099194" origin_rpy="0 0 -0.002602" axis="0.70941 0.70479 0" lower="${joint_limit_femur_lower}" upper="${joint_limit_femur_upper}" effort="${joint_effort_femur}" velocity="${joint_velocity_femur}" damping="${joint_damping_femur}" friction="${joint_friction_femur}" soft_lower="${joint_limit_femur_lower}" soft_upper="${joint_limit_femur_upper}"/>
+
+  <xacro:actuated_joint name="tibia3j" parent="femur3l" child="servo33" origin_xyz="-0.095454 0.032033 0" origin_rpy="0.010315 0.010194 0.0026546" axis="0.71124 0.70294 0" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}" effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" damping="${joint_damping_servo}" friction="${joint_friction_servo}" soft_lower="${joint_limit_servo_lower}" soft_upper="${joint_limit_servo_upper}"/>
+
+  <xacro:fixed_joint name="servo33_tibia3l" parent="servo33" child="tibia3l" origin_xyz="0.39824 -0.31476 -0.0085515" origin_rpy="-0.001929 -0.0019164 -0.0026002">
+    <extras>
+      <calibration rising="0.0" falling="0.0"/>
+      <limit effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}"/>
+      <dynamics damping="${joint_damping_servo}" friction="${joint_friction_servo}"/>
+      <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_servo_lower}" soft_upper_limit="${joint_limit_servo_upper}"/>
+    </extras>
+  </xacro:fixed_joint>
+
+  <xacro:passive_joint name="feet3j" parent="tibia3l" child="feet3" origin_xyz="-0.49356 0.37534 -0.013525" origin_rpy="-0.022682 -0.022528 0.00025552" axis="0.70941 0.70479 0" lower="${joint_limit_feet_lower}" upper="${joint_limit_feet_upper}" effort="${joint_effort_feet}" velocity="${joint_velocity_feet}" damping="${joint_damping_feet}" friction="${joint_friction_feet}" soft_lower="${joint_soft_limit_feet_lower}" soft_upper="${joint_soft_limit_feet_upper}"/>
+
+  <!-- === Leg 4 === -->
+  <xacro:mesh_link name="servo41" mesh="${mesh_dir}/servo41.STL" rgba="${color_servo_blue}">
+    <inertial>
+      <origin xyz="-0.175899322404769 0.172085580111593 0.0224908039781762" rpy="0 0 0"/>
+      <mass value="0.0549993897912535"/>
+      <inertia ixx="1.1663836738682E-05" ixy="-2.86078186669532E-06" ixz="-3.25761528920688E-07" iyy="1.16375078398475E-05" iyz="-3.27225737356337E-07" izz="9.22551281730925E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="coxa4l" mesh="${mesh_dir}/coxa4l.STL" rgba="${color_servo_blue}">
+    <inertial>
+      <origin xyz="-0.0317835326511136 0.0231299251838518 0.0172727578450551" rpy="0 0 0"/>
+      <mass value="0.0210998952855894"/>
+      <inertia ixx="1.77344722682222E-05" ixy="3.48878893322265E-06" ixz="-1.73447105967461E-07" iyy="2.13052922004781E-05" iyz="3.93407988034353E-07" izz="1.11184038453929E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="servo42" mesh="${mesh_dir}/servo42.STL" rgba="${color_servo_green}">
+    <inertial>
+      <origin xyz="-0.36402703193112 0.221609020509639 0.019414051862226" rpy="0 0 0"/>
+      <mass value="0.0328373418730203"/>
+      <inertia ixx="8.9139289130498E-06" ixy="-2.9688724402552E-06" ixz="2.48695119875394E-07" iyy="8.98362999722345E-06" iyz="2.45792509805699E-07" izz="8.26690043596187E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="femur4l" mesh="${mesh_dir}/femur4l.STL" rgba="${color_servo_green}">
+    <inertial>
+      <origin xyz="-0.0362625840947357 0.0271468708444762 -0.000197851971891407" rpy="0 0 0"/>
+      <mass value="0.0192528102748715"/>
+      <inertia ixx="1.48542304218195E-05" ixy="1.03180044791302E-06" ixz="1.09104558451051E-07" iyy="1.4164430046992E-05" iyz="-5.45031216816129E-08" izz="2.80037773201219E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="servo43" mesh="${mesh_dir}/servo43.STL" rgba="${color_servo_blue}">
+    <inertial>
+      <origin xyz="-0.00656986935940312 0.00654250971484877 -1.98928306326326E-05" rpy="0 0 0"/>
+      <mass value="0.0241727620251609"/>
+      <inertia ixx="4.85376822564604E-06" ixy="2.48640685720955E-07" ixz="-5.91909079056509E-09" iyy="5.92686155066159E-06" iyz="4.34985828720764E-09" izz="8.53500125890651E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="tibia4l" mesh="${mesh_dir}/tibia4l.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="-0.455224144408688 0.29811671894911 0.0125394801599297" rpy="0 0 0"/>
+      <mass value="0.0203799723988213"/>
+      <inertia ixx="1.67743452404399E-05" ixy="1.06771992685417E-05" ixz="-2.53160577115923E-06" iyy="1.34347132979719E-05" iyz="1.9383012776708E-06" izz="2.55169492707067E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="feet4" mesh="${mesh_dir}/feet4.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="-0.00489833883163776 0.00360688621506011 -0.00520049441859904" rpy="0 0 0"/>
+      <mass value="0.0030798304332486"/>
+      <inertia ixx="1.75255812358691E-07" ixy="-3.1591384749421E-08" ixz="6.25919450854644E-09" iyy="1.75669056157634E-07" iyz="-6.2988979453629E-09" izz="2.05025375613724E-07"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:fixed_joint name="base_servo41" parent="base_link" child="servo41" origin_xyz="0.022459 -0.037253 0.013934" origin_rpy="1.5708 0 0"/>
+
+  <xacro:actuated_joint name="coxa4j" parent="servo41" child="coxa4l" origin_xyz="-0.16913 0.1789 0" origin_rpy="0 0 -1.6096" axis="0 0 1" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}" effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" damping="${joint_damping_servo}" friction="${joint_friction_servo}" soft_lower="${joint_limit_servo_lower}" soft_upper="${joint_limit_servo_upper}"/>
+
+  <xacro:fixed_joint name="coxa4l_servo42" parent="coxa4l" child="servo42" origin_xyz="0.32951 -0.178 -0.0012" origin_rpy="0 0 0.002602">
+    <extras>
+      <calibration rising="0.0" falling="0.0"/>
+      <limit effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}"/>
+      <dynamics damping="${joint_damping_servo}" friction="${joint_friction_servo}"/>
+      <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_servo_lower}" soft_upper_limit="${joint_limit_servo_upper}"/>
+    </extras>
+  </xacro:fixed_joint>
+
+  <xacro:actuated_joint name="femur4j" parent="servo42" child="femur4l" origin_xyz="-0.36354 0.22209 0.0099194" origin_rpy="-0.0033127 -0.0032911 -0.0025966" axis="0.70941 0.70479 0" lower="${joint_limit_femur_lower}" upper="${joint_limit_femur_upper}" effort="${joint_effort_femur}" velocity="${joint_velocity_femur}" damping="${joint_damping_femur}" friction="${joint_friction_femur}" soft_lower="${joint_limit_femur_lower}" soft_upper="${joint_limit_femur_upper}"/>
+
+  <xacro:actuated_joint name="tibia4j" parent="femur4l" child="servo43" origin_xyz="-0.063431 0.063847 0" origin_rpy="0.0070845 0.0070017 0.0026268" axis="0.71124 0.70294 0" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}" effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" damping="${joint_damping_servo}" friction="${joint_friction_servo}" soft_lower="${joint_limit_servo_lower}" soft_upper="${joint_limit_servo_upper}"/>
+
+  <xacro:fixed_joint name="servo43_tibia4l" parent="servo43" child="tibia4l" origin_xyz="0.42683 -0.28614 -0.006835" origin_rpy="0 0 -0.002602">
+    <extras>
+      <calibration rising="0.0" falling="0.0"/>
+      <limit effort="${joint_effort_servo}" velocity="${joint_velocity_servo}" lower="${joint_limit_servo_lower}" upper="${joint_limit_servo_upper}"/>
+      <dynamics damping="${joint_damping_servo}" friction="${joint_friction_servo}"/>
+      <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_servo_lower}" soft_upper_limit="${joint_limit_servo_upper}"/>
+    </extras>
+  </xacro:fixed_joint>
+
+  <xacro:passive_joint name="feet4j" parent="tibia4l" child="feet4" origin_xyz="-0.5085 0.36013 -0.01661" origin_rpy="-0.031213 -0.030995 0.00048382" axis="0.70941 0.70479 0" lower="${joint_limit_feet_lower}" upper="${joint_limit_feet_upper}" effort="${joint_effort_feet}" velocity="${joint_velocity_feet}" damping="${joint_damping_feet}" friction="${joint_friction_feet}" soft_lower="${joint_soft_limit_feet_lower}" soft_upper="${joint_soft_limit_feet_upper}"/>
+
+  <!-- === Camera Assembly === -->
+  <xacro:mesh_link name="cambase" mesh="${mesh_dir}/cambase.STL" rgba="${color_base}">
+    <inertial>
+      <origin xyz="-4.85972373454047E-13 0.00363282726513761 -0.00280912601207582" rpy="0 0 0"/>
+      <mass value="0.00217028149426883"/>
+      <inertia ixx="2.67489404265614E-07" ixy="-1.27171708971365E-18" ixz="3.32001644083873E-17" iyy="2.14887158536916E-07" iyz="-7.35015121718887E-09" izz="4.59393361071686E-07"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="caml1" mesh="${mesh_dir}/caml1.STL" rgba="${color_base}">
+    <inertial>
+      <origin xyz="-0.013516039389848 -0.0151119450257868 -0.0157339735136445" rpy="0 0 0"/>
+      <mass value="0.0231834131739146"/>
+      <inertia ixx="3.49484842949337E-06" ixy="-5.13684784589831E-07" ixz="1.64438290748317E-07" iyy="3.13440598348059E-06" iyz="1.56651144865674E-07" izz="4.21531812902304E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="caml2" mesh="${mesh_dir}/caml2.STL" rgba="${color_base}">
+    <inertial>
+      <origin xyz="-0.00829787092843479 -0.00125257693634678 0.0034961726278622" rpy="0 0 0"/>
+      <mass value="0.0209078266382902"/>
+      <inertia ixx="1.88622426776458E-06" ixy="-9.79229834524731E-08" ixz="2.84219026709425E-07" iyy="2.17194884551475E-06" iyz="7.17831496739944E-09" izz="3.09410298894122E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="caml" mesh="${mesh_dir}/caml.STL" rgba="${color_base}">
+    <inertial>
+      <origin xyz="0.00136224010866628 -0.000831992864671033 2.35922392732846E-15" rpy="0 0 0"/>
+      <mass value="0.00245642216350232"/>
+      <inertia ixx="1.81975806027427E-07" ixy="3.81792745135696E-09" ixz="-1.62573370771801E-20" iyy="9.77136681158312E-08" iyz="4.2313131765443E-21" izz="9.60989355374431E-08"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:fixed_joint name="base_cambase" parent="base_link" child="cambase" origin_xyz="-0.158352952588617 -0.067572182853491 0.129818565608473" origin_rpy="1.57079632679491 1.56559228897925 -3.14159265358978">
+    <extras>
+      <ros2_control>
+        <joint name="base_cambase">
+          <hardware_interface>${hardware_interface_position}</hardware_interface>
+          <calibration rising="0.0" falling="0.0"/>
+          <limit effort="${joint_effort_camera}" velocity="${joint_velocity_camera}" lower="${joint_limit_camera_lower}" upper="${joint_limit_camera_upper}"/>
+          <dynamics damping="${joint_damping_camera}" friction="${joint_friction_camera}"/>
+          <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_camera_lower}" soft_upper_limit="${joint_limit_camera_upper}"/>
+        </joint>
+      </ros2_control>
+      <calibration rising="0.0" falling="0.0"/>
+      <limit effort="${joint_effort_camera}" velocity="${joint_velocity_camera}" lower="${joint_limit_camera_lower}" upper="${joint_limit_camera_upper}"/>
+      <dynamics damping="${joint_damping_camera}" friction="${joint_friction_camera}"/>
+      <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_camera_lower}" soft_upper_limit="${joint_limit_camera_upper}"/>
+    </extras>
+  </xacro:fixed_joint>
+
+  <xacro:actuated_joint name="cambase_caml1" parent="cambase" child="caml1" origin_xyz="0 0 0" origin_rpy="0.52319 -0.42844 0.61122" axis="0.41546 0.45448 0.78793" lower="${joint_limit_camera_lower}" upper="${joint_limit_camera_upper}" effort="${joint_effort_camera}" velocity="${joint_velocity_camera}" damping="${joint_damping_camera}" friction="${joint_friction_camera}" soft_lower="${joint_limit_camera_lower}" soft_upper="${joint_limit_camera_upper}"/>
+
+  <xacro:actuated_joint name="caml1_caml2" parent="caml1" child="caml2" origin_xyz="-0.032105 -0.035121 -0.016879" origin_rpy="0 -0.89729 0.83023" axis="0 1 0" lower="${joint_limit_camera_lower}" upper="${joint_limit_camera_upper}" effort="${joint_effort_camera}" velocity="${joint_velocity_camera}" damping="${joint_damping_camera}" friction="${joint_friction_camera}" soft_lower="${joint_limit_camera_lower}" soft_upper="${joint_limit_camera_upper}"/>
+
+  <xacro:fixed_joint name="camj" parent="caml2" child="caml" origin_xyz="-0.01155 -0.00096998 0.0108" origin_rpy="1.5663 -1.5708 -3.1339">
+    <extras>
+      <ros2_control>
+        <joint name="camj">
+          <hardware_interface>${hardware_interface_position}</hardware_interface>
+          <calibration rising="0.0" falling="0.0"/>
+          <limit effort="${joint_effort_camera}" velocity="${joint_velocity_camera}" lower="${joint_limit_camera_lower}" upper="${joint_limit_camera_upper}"/>
+          <dynamics damping="${joint_damping_camera}" friction="${joint_friction_camera}"/>
+          <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_camera_lower}" soft_upper_limit="${joint_limit_camera_upper}"/>
+        </joint>
+      </ros2_control>
+      <calibration rising="0.0" falling="0.0"/>
+      <limit effort="${joint_effort_camera}" velocity="${joint_velocity_camera}" lower="${joint_limit_camera_lower}" upper="${joint_limit_camera_upper}"/>
+      <dynamics damping="${joint_damping_camera}" friction="${joint_friction_camera}"/>
+      <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_camera_lower}" soft_upper_limit="${joint_limit_camera_upper}"/>
+    </extras>
+  </xacro:fixed_joint>
+
+  <!-- === Payload & Electronics === -->
+  <xacro:mesh_link name="cell1" mesh="${mesh_dir}/cell1.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="-0.244694104887168 0.160666796035246 -0.00618055061929496" rpy="0 0 0"/>
+      <mass value="0.0499853466405161"/>
+      <inertia ixx="2.0244065389409E-06" ixy="3.53239426414076E-20" ixz="2.94496692564637E-15" iyy="1.86112107324855E-05" iyz="-1.81954433898578E-24" izz="1.86112107324855E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="cell2" mesh="${mesh_dir}/cell2.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="-0.21605789587199 0.1023675823468 0.0408194493855248" rpy="0 0 0"/>
+      <mass value="0.0499853466405161"/>
+      <inertia ixx="1.86107615325504E-05" ixy="-8.63167978228236E-08" ixz="1.49335843962057E-17" iyy="2.02485573887598E-06" iyz="2.86959022521827E-15" izz="1.86112107324855E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="lipo" mesh="${mesh_dir}/lipo.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="-0.258174830572919 0.263999232932751 -0.0477397920000414" rpy="0 0 0"/>
+      <mass value="0.349997884499999"/>
+      <inertia ixx="0.00101233971442587" ixy="-1.58525796998738E-13" ixz="-9.71976093727736E-15" iyy="0.00011999094140275" iyz="9.71450148261008E-17" izz="0.000955873389059873"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="imul" mesh="${mesh_dir}/imul.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="-0.213501631412028 0.113837295066825 0.0161781119117345" rpy="0 0 0"/>
+      <mass value="0.002937161766458"/>
+      <inertia ixx="1.52539886110946E-07" ixy="2.2856887179168E-12" ixz="-8.05576700837749E-11" iyy="1.23745165873367E-07" iyz="3.85175465800715E-12" izz="2.74693453874094E-07"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="cell3" mesh="${mesh_dir}/cell3.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="0.0325 5.77030437320936E-12 -5.55111512312578E-17" rpy="0 0 0"/>
+      <mass value="0.0499853466405161"/>
+      <inertia ixx="2.0244065389409E-06" ixy="-2.94495377364414E-15" ixz="3.32709575907461E-20" iyy="1.86112107324855E-05" iyz="5.89761258692036E-30" izz="1.86112107324855E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="stepper" mesh="${mesh_dir}/stepper.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="-0.249087331832357 0.116064652826235 0.0263763295335413" rpy="0 0 0"/>
+      <mass value="0.207103571205244"/>
+      <inertia ixx="4.95697655016273E-05" ixy="-3.13286961279758E-13" ixz="1.34899285182874E-09" iyy="4.9569645101094E-05" iyz="-3.50862704404448E-12" izz="5.8177968963898E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="coupling" mesh="${mesh_dir}/coupling.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="-0.0222071129770512 5.34128297147163E-12 -1.27708954522632E-12" rpy="0 0 0"/>
+      <mass value="0.0173973531530402"/>
+      <inertia ixx="5.50419861200883E-07" ixy="5.24434323804791E-16" ixz="-1.25398434632474E-16" iyy="2.73088742482146E-06" iyz="0" izz="2.73088742482146E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="flange" mesh="${mesh_dir}/flange.STL" rgba="${color_sensor_purple}">
+    <inertial>
+      <origin xyz="-2.90384383205833E-12 7.90534304684343E-13 0.0121683891910861" rpy="0 0 0"/>
+      <mass value="0.0165181718451683"/>
+      <inertia ixx="2.60100400176592E-06" ixy="1.58818677610181E-21" ixz="5.68956069101515E-17" iyy="2.60100400176592E-06" iyz="-1.54692570472504E-17" izz="2.36255703355926E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="lidarmount" mesh="${mesh_dir}/lidarmount.STL" rgba="${color_sensor_purple}">
+    <inertial>
+      <origin xyz="-0.248417640151496 0.114901144087754 0.12950047438279" rpy="0 0 0"/>
+      <mass value="0.0199629448790884"/>
+      <inertia ixx="9.39303887331325E-06" ixy="-1.33283096989708E-06" ixz="-5.30310010911762E-08" iyy="1.0942656994844E-05" iyz="9.2159975733057E-08" izz="6.50210639657573E-06"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="lidarl" mesh="${mesh_dir}/lidarl.STL" rgba="${color_sensor_purple}">
+    <inertial>
+      <origin xyz="-0.256143176414863 0.1283285607983 0.143452449615597" rpy="0 0 0"/>
+      <mass value="0.109998846473485"/>
+      <inertia ixx="4.02318810582621E-05" ixy="-7.76004870962997E-06" ixz="-7.75960890763623E-12" iyy="4.92541598732305E-05" iyz="-4.46080940664635E-12" izz="3.57666279058567E-05"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:mesh_link name="encoder" mesh="${mesh_dir}/encoder.STL" rgba="${color_struct_gray}">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </xacro:mesh_link>
+
+  <xacro:fixed_joint name="base_cell1" parent="base_link" child="cell1" origin_xyz="0.0224591225389912 -0.0372527334765431 0.0139338253382222" origin_rpy="1.5707963267949 0 0"/>
+
+  <xacro:fixed_joint name="base_cell2" parent="base_link" child="cell2" origin_xyz="0.0224591225389912 -0.0372527334765431 0.0139338253382222" origin_rpy="1.5707963267949 0 0"/>
+
+  <xacro:fixed_joint name="base_lipo" parent="base_link" child="lipo" origin_xyz="0.03786685284412 -0.28824701343813 0.083860829373268" origin_rpy="-3.14159265358973 0 -1.5707963267949"/>
+
+  <xacro:fixed_joint name="imuj" parent="base_link" child="imul" origin_xyz="0.0224591225389912 -0.0372527334765431 0.0139338253382222" origin_rpy="1.5707963267949 0 0"/>
+
+  <xacro:fixed_joint name="base_cell3" parent="base_link" child="cell3" origin_xyz="-0.254734982348177 -0.031072182877828 0.088600621373457" origin_rpy="0 0 0"/>
+
+  <xacro:fixed_joint name="base_stepper" parent="base_link" child="stepper" origin_xyz="0.022459 -0.037253 0.013934" origin_rpy="1.5708 0 0"/>
+
+  <xacro:passive_joint name="base_coupling" parent="stepper" child="coupling" origin_xyz="-0.24909 0.11606 0.045789" origin_rpy="1.0356 1.5708 0" axis="1 0 0" lower="${joint_limit_coupling_lower}" upper="${joint_limit_coupling_upper}" effort="${joint_effort_coupling}" velocity="${joint_velocity_coupling}" damping="${joint_damping_coupling}" friction="${joint_friction_coupling}" soft_lower="${joint_soft_limit_coupling_lower}" soft_upper="${joint_soft_limit_coupling_upper}" k_velocity="${joint_k_velocity_coupling}"/>
+
+  <xacro:fixed_joint name="coupling_flange" parent="coupling" child="flange" origin_xyz="-0.044 0 0" origin_rpy="1.5708 -0.50045 -1.5708"/>
+
+  <xacro:fixed_joint name="flange_lidarmount" parent="flange" child="lidarmount" origin_xyz="0.24909 -0.11606 -0.089789" origin_rpy="0 0 0">
+    <extras>
+      <ros2_control>
+        <joint name="flange_lidarmount">
+          <hardware_interface>${hardware_interface_effort}</hardware_interface>
+          <calibration rising="0.0" falling="0.0"/>
+          <limit effort="${joint_effort_lidar}" velocity="${joint_velocity_lidar}" lower="${joint_limit_lidar_lower}" upper="${joint_limit_lidar_upper}"/>
+          <dynamics damping="${joint_damping_lidar}" friction="${joint_friction_lidar}"/>
+          <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_lidar_lower}" soft_upper_limit="${joint_limit_lidar_upper}"/>
+        </joint>
+      </ros2_control>
+      <calibration rising="0.0" falling="0.0"/>
+      <limit effort="${joint_effort_lidar}" velocity="${joint_velocity_lidar}" lower="${joint_limit_lidar_lower}" upper="${joint_limit_lidar_upper}"/>
+      <dynamics damping="${joint_damping_lidar}" friction="${joint_friction_lidar}"/>
+      <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_lidar_lower}" soft_upper_limit="${joint_limit_lidar_upper}"/>
+    </extras>
+  </xacro:fixed_joint>
+
+  <xacro:fixed_joint name="lidarmount_lidar" parent="lidarmount" child="lidarl" origin_xyz="0 0 0" origin_rpy="0 0 0">
+    <extras>
+      <ros2_control>
+        <joint name="lidarmount_lidar">
+          <hardware_interface>${hardware_interface_effort}</hardware_interface>
+          <calibration rising="0.0" falling="0.0"/>
+          <limit effort="${joint_effort_lidar}" velocity="${joint_velocity_lidar}" lower="${joint_limit_lidar_lower}" upper="${joint_limit_lidar_upper}"/>
+          <dynamics damping="${joint_damping_lidar}" friction="${joint_friction_lidar}"/>
+          <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_lidar_lower}" soft_upper_limit="${joint_limit_lidar_upper}"/>
+        </joint>
+      </ros2_control>
+      <calibration rising="0.0" falling="0.0"/>
+      <limit effort="${joint_effort_lidar}" velocity="${joint_velocity_lidar}" lower="${joint_limit_lidar_lower}" upper="${joint_limit_lidar_upper}"/>
+      <dynamics damping="${joint_damping_lidar}" friction="${joint_friction_lidar}"/>
+      <safety_controller k_position="${joint_k_position_active}" k_velocity="${joint_k_velocity_active}" soft_lower_limit="${joint_limit_lidar_lower}" soft_upper_limit="${joint_limit_lidar_upper}"/>
+    </extras>
+  </xacro:fixed_joint>
+
+  <xacro:fixed_joint name="base_encoder" parent="base_link" child="encoder" origin_xyz="0.0224591225389912 -0.0372527334765431 0.0139338253382222" origin_rpy="1.5707963267949 0 0"/>
+
+</robot>

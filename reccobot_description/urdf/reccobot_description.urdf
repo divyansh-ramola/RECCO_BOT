@@ -1,5 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <robot name="reccobot_description">
+
+
+  <xacro:include filename="lidar.xacro" />
   <!-- World link - fixed reference frame -->
   <link name="world"/>
   
@@ -1209,6 +1212,7 @@
     <child link="lidarmount" />
     <axis xyz="0 0 0" />
   <ros2_control><joint name="flange_lidarmount"><hardware_interface>EffortJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="2.5" velocity="3.5" lower="-6.283" upper="6.283" /><dynamics damping="0.02" friction="0.01" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-6.283" soft_upper_limit="6.283" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="2.5" velocity="3.5" lower="-6.283" upper="6.283" /><dynamics damping="0.02" friction="0.01" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-6.283" soft_upper_limit="6.283" /></joint>
+  <!-- 
   <link name="lidarl">
     <inertial>
       <origin xyz="-0.256143176414863 0.1283285607983 0.143452449615597" rpy="0 0 0" />
@@ -1237,6 +1241,7 @@
     <child link="lidarl" />
     <axis xyz="0 0 0" />
   <ros2_control><joint name="lidarmount_lidar"><hardware_interface>EffortJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="2.5" velocity="3.5" lower="-6.283" upper="6.283" /><dynamics damping="0.02" friction="0.01" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-6.283" soft_upper_limit="6.283" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="2.5" velocity="3.5" lower="-6.283" upper="6.283" /><dynamics damping="0.02" friction="0.01" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-6.283" soft_upper_limit="6.283" /></joint>
+  -->
   <link name="encoder">
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0" />

@@ -1,0 +1,83 @@
+joint_state_publisher:
+  ros__parameters:
+    publish_default_positions: true
+    publish_default_velocities: false
+    publish_default_efforts: false
+    use_mimic_tags: true
+    use_smallest_joint_limits: true
+    rate: 50
+
+    # --- Standing Pose with every non-coxa joint negated (coxa unchanged) ---
+
+    # Coxa joints: kept as original (unchanged)
+    zeros.coxa1j: 0.0
+    zeros.coxa2j: 0.0
+    zeros.coxa3j: 0.0
+    zeros.coxa4j: 0.0
+
+    # Femur joints: negated from previous suggestion (was 0.6)
+    zeros.femur1j: 0.161
+    zeros.femur2j: 0.161
+    zeros.femur3j: 0.161
+    zeros.femur4j: 0.161
+
+    # Tibia joints: negated from previous suggestion (was -1.0)
+    zeros.tibia1j: -0.928
+    zeros.tibia2j: -0.928
+    zeros.tibia3j: -0.928
+    zeros.tibia4j: -0.928
+
+    # Feet joints: still neutral (negating 0.0)
+    zeros.feet1j: 0.0
+    zeros.feet2j: 0.0
+    zeros.feet3j: 0.0
+    zeros.feet4j: 0.0
+
+    # Camera gimbal: unchanged (negating 0.0)
+    zeros.cambase_caml1: 0.0
+    zeros.caml1_caml2: 0.0
+
+    # Stepper coupling (base yaw): negated from previous suggestion (was -0.5)
+    zeros.base_coupling: 0.5
+
+joint_state_publisher_gui:
+  ros__parameters:
+    publish_default_positions: true
+    publish_default_velocities: false
+    publish_default_efforts: false
+    use_mimic_tags: true
+    use_smallest_joint_limits: true
+    rate: 50
+
+    # --- Standing Pose with every non-coxa joint negated (coxa unchanged) ---
+
+    # Coxa joints: kept as original (unchanged)
+    zeros.coxa1j: 0.0
+    zeros.coxa2j: 0.0
+    zeros.coxa3j: 0.0
+    zeros.coxa4j: 0.0
+
+    # Femur joints: negated from previous suggestion (was 0.6)
+    zeros.femur1j: 0.161
+    zeros.femur2j: 0.161
+    zeros.femur3j: 0.161
+    zeros.femur4j: 0.161
+
+    # Tibia joints: negated from previous suggestion (was -1.0)
+    zeros.tibia1j: -0.928
+    zeros.tibia2j: -0.928
+    zeros.tibia3j: -0.928
+    zeros.tibia4j: -0.928
+
+    # Feet joints: still neutral (negating 0.0)
+    zeros.feet1j: 0.0
+    zeros.feet2j: 0.0
+    zeros.feet3j: 0.0
+    zeros.feet4j: 0.0
+
+    # Camera gimbal: unchanged (negating 0.0)
+    zeros.cambase_caml1: 0.0
+    zeros.caml1_caml2: 0.0
+
+    # Stepper coupling (base yaw): negated from previous suggestion (was -0.5)
+    zeros.base_coupling: 0.5

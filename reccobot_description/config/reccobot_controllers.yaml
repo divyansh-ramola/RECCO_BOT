@@ -1,0 +1,38 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    leg_controller:
+      type: position_controllers/JointGroupPositionController
+
+    camera_controller:
+      type: position_controllers/JointGroupPositionController
+
+leg_controller:
+  ros__parameters:
+    joints:
+      - coxa1j
+      - femur1j
+      - tibia1j
+      - coxa2j
+      - femur2j
+      - tibia2j
+      - coxa3j
+      - femur3j
+      - tibia3j
+      - coxa4j
+      - femur4j
+      - tibia4j
+    command_interfaces:
+      - position
+
+camera_controller:
+  ros__parameters:
+    joints:
+      - cambase_caml1
+      - caml1_caml2
+    command_interfaces:
+      - position

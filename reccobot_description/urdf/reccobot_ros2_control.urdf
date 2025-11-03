@@ -1,29 +1,127 @@
-<!-- ros2_control snippet: controllers and joint interfaces -->
-<ros2_control name="reccobot_controllers">
-  <controller name="leg_controller" type="position_controllers/JointGroupPositionController">
-    <joints>
-      <joint>coxa1j</joint>
-      <joint>femur1j</joint>
-      <joint>tibia1j</joint>
-      <joint>foot1j</joint>
-      <joint>coxa2j</joint>
-      <joint>femur2j</joint>
-      <joint>tibia2j</joint>
-      <joint>foot2j</joint>
-      <joint>coxa3j</joint>
-      <joint>femur3j</joint>
-      <joint>tibia3j</joint>
-      <joint>foot3j</joint>
-      <joint>coxa4j</joint>
-      <joint>femur4j</joint>
-      <joint>tibia4j</joint>
-      <joint>foot4j</joint>
-    </joints>
-  </controller>
-  <controller name="sensor_controller" type="position_controllers/JointGroupPositionController">
-    <joints>
-      <joint>cam1j</joint>
-      <joint>lidar1j</joint>
-    </joints>
-  </controller>
-</ros2_control>
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="reccobot">
+
+  <xacro:property name="PI" value="3.14159265359" />
+  <xacro:property name="limit_servo" value="1.396" />
+  <xacro:property name="limit_femur" value="${PI / 2}" />
+
+  <!-- ros2_control for Ignition Gazebo (ros_gz_sim) -->
+  <ros2_control name="ReccobotSystem" type="system">
+    <hardware>
+      <plugin>ign_ros2_control/IgnitionSystem</plugin>
+    </hardware>
+
+    <!-- Legs: position-controlled servos (exclude passive feet joints) -->
+    <joint name="coxa1j">
+      <command_interface name="position">
+        <param name="min">${-limit_servo}</param>
+        <param name="max">${limit_servo}</param>
+      </command_interface>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="femur1j">
+      <command_interface name="position">
+        <param name="min">${-limit_femur}</param>
+        <param name="max">${limit_femur}</param>
+      </command_interface>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="tibia1j">
+      <command_interface name="position">
+        <param name="min">${-limit_servo}</param>
+        <param name="max">${limit_servo}</param>
+      </command_interface>
+      <state_interface name="position"/>
+    </joint>
+
+    <joint name="coxa2j">
+      <command_interface name="position">
+        <param name="min">${-limit_servo}</param>
+        <param name="max">${limit_servo}</param>
+      </command_interface>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="femur2j">
+      <command_interface name="position">
+        <param name="min">${-limit_femur}</param>
+        <param name="max">${limit_femur}</param>
+      </command_interface>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="tibia2j">
+      <command_interface name="position">
+        <param name="min">${-limit_servo}</param>
+        <param name="max">${limit_servo}</param>
+      </command_interface>
+      <state_interface name="position"/>
+    </joint>
+
+    <joint name="coxa3j">
+      <command_interface name="position">
+        <param name="min">${-limit_servo}</param>
+        <param name="max">${limit_servo}</param>
+      </command_interface>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="femur3j">
+      <command_interface name="position">
+        <param name="min">${-limit_femur}</param>
+        <param name="max">${limit_femur}</param>
+      </command_interface>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="tibia3j">
+      <command_interface name="position">
+        <param name="min">${-limit_servo}</param>
+        <param name="max">${limit_servo}</param>
+      </command_interface>
+      <state_interface name="position"/>
+    </joint>
+
+    <joint name="coxa4j">
+      <command_interface name="position">
+        <param name="min">${-limit_servo}</param>
+        <param name="max">${limit_servo}</param>
+      </command_interface>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="femur4j">
+      <command_interface name="position">
+        <param name="min">${-limit_femur}</param>
+        <param name="max">${limit_femur}</param>
+      </command_interface>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="tibia4j">
+      <command_interface name="position">
+        <param name="min">${-limit_servo}</param>
+        <param name="max">${limit_servo}</param>
+      </command_interface>
+      <state_interface name="position"/>
+    </joint>
+
+    <!-- Optional: camera gimbal joints -->
+    <joint name="cambase_caml1">
+      <command_interface name="position">
+        <param name="min">${-limit_servo}</param>
+        <param name="max">${limit_servo}</param>
+      </command_interface>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="caml1_caml2">
+      <command_interface name="position">
+        <param name="min">${-limit_servo}</param>
+        <param name="max">${limit_servo}</param>
+      </command_interface>
+      <state_interface name="position"/>
+    </joint>
+  </ros2_control>
+
+  <!-- Ignition Gazebo ROS 2 Control plugin (Fortress/Garden via ros_gz_sim) -->
+  <gazebo>
+    <plugin name="ign_ros2_control::IgnitionROS2ControlPlugin" filename="libign_ros2_control-system.so">
+      <parameters>$(find reccobot_description)/config/reccobot_controllers.yaml</parameters>
+    </plugin>
+  </gazebo>
+
+</robot>

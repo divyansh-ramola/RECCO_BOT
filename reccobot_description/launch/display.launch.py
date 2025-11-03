@@ -3,29 +3,24 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
-from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
-from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
 from launch_ros.parameter_descriptions import ParameterValue
 from launch.substitutions import Command
 
 
 def generate_launch_description():
     pkg_share = get_package_share_directory('reccobot_description')
-    urdf_path = os.path.join(pkg_share, 'urdf', 'reccobot_description.urdf')
+    urdf_default = os.path.join(pkg_share, 'urdf', 'reccobot_description.urdf')
+    xacro_file = LaunchConfiguration('xacro_file')
     initial_positions = LaunchConfiguration('initial_positions')
     rviz_config_path = os.path.join(pkg_share, 'urdf.rviz')
 
-    # Read URDF file
-    robot_description = ''
-    try:
-        with open(urdf_path, 'r') as inf:
-            robot_description = inf.read()
-    except Exception as e:
-        print(f"Error reading URDF file: {e}")
-        robot_description = ''
+    # Declare file arguments (xacro/urdf and initial joint positions YAML)
+    xacro_file_arg = DeclareLaunchArgument(
+        'xacro_file',
+        default_value=PathJoinSubstitution([pkg_share, 'urdf', 'reccobot_description.urdf']),
+        description='Path to the Xacro/URDF to load (will be expanded via xacro)'
+    )
 
     initial_positions_arg = DeclareLaunchArgument(
         'initial_positions',
@@ -35,14 +30,14 @@ def generate_launch_description():
         description='YAML file with initial joint positions for joint_state_publisher'
     )
 
-    # Robot State Publisher - publishes TF transforms based on URDF
+    # Robot State Publisher - expand xacro/urdf and publish TF
     robot_state_publisher_node = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
         name='robot_state_publisher',
         output='screen',
         parameters=[{
-            'robot_description': robot_description,
+            'robot_description': ParameterValue(Command(['xacro ', xacro_file]), value_type=str),
             'publish_frequency': 30.0  # Hz
         }]
     )
@@ -69,6 +64,7 @@ def generate_launch_description():
     )
 
     ld = LaunchDescription()
+    ld.add_action(xacro_file_arg)
     ld.add_action(initial_positions_arg)
     
     # Add nodes in order

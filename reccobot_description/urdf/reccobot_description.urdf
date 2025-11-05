@@ -1,10 +1,21 @@
 <?xml version='1.0' encoding='utf-8'?>
 <robot name="reccobot_description" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+  <!-- Simulator selection forwarded from launch: Ignition/GZ vs Gazebo Classic -->
+  <xacro:arg name="is_ignition" default="true"/>
 
-  <xacro:include filename="$(find arduinobot_description)/urdf/lidar.xacro" />
+  <!-- Include sensor definitions -->
+  <xacro:include filename="$(find reccobot_description)/urdf/lidar.xacro" />
+  <xacro:include filename="$(find reccobot_description)/urdf/camera.xacro" />
+  
+  <!-- Include ros2_control configuration -->
+  <xacro:include filename="$(find reccobot_description)/urdf/reccobot_ros2_control.xacro" />
+  
+  <!-- Include Gazebo configuration -->
+  <xacro:include filename="$(find reccobot_description)/urdf/reccobot_gazebo.xacro" />
+  
   <!-- World link - fixed reference frame -->
-  <link name="world"/>
+
   
   <!-- 
     ROTATION ADJUSTMENT: 
@@ -16,13 +27,18 @@
       - 180 degrees = 3.14159 radians
       - -90 degrees = -1.5708 radians
   -->
-  <joint name="world_to_base" type="fixed">
-    <parent link="world"/>
-    <child link="base_link"/>
-    <origin xyz="0 0 0" rpy="-1.5708 0 0"/>
+
+
+
+  <link name="base_link"/>
+
+  <joint name="base_to_chassis" type="fixed">
+    <parent link="base_link"/>
+    <child link="chassis_link"/>
+    <origin xyz="0.0 0.0 0.15" rpy="-1.5708 0 0" />
   </joint>
   
-  <link name="base_link">
+  <link name="chassis_link">
     <inertial>
       <!-- Shift mass opposite to mesh displacement -->
       <origin xyz="-0.22536 -0.06397 0.12957" rpy="0 0 0"/>
@@ -73,7 +89,7 @@
   </link>
   <joint name="base_servo11" type="fixed">
     <origin xyz="0.022459 -0.037253 0.013934" rpy="1.5708 0 0" />
-    <parent link="base_link" />
+    <parent link="chassis_link" />
     <child link="servo11" />
     <axis xyz="0 0 0" />
   </joint>
@@ -104,7 +120,11 @@
     <parent link="servo11" />
     <child link="coxa1l" />
     <axis xyz="0 0 1" />
-    <ros2_control><joint name="coxa1j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+    <calibration rising="0.0" falling="0.0" />
+    <limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" />
+    <dynamics damping="0.04" friction="0.02" />
+    <safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" />
+  </joint>
   <link name="servo12">
     <inertial>
       <origin xyz="-0.364027031928889 0.221609020499465 0.0194140519398458" rpy="0 0 0" />
@@ -132,7 +152,7 @@
     <parent link="coxa1l" />
     <child link="servo12" />
     <axis xyz="0 0 0" />
-  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  </joint>
   <link name="femur1l">
     <inertial>
       <origin xyz="-0.0969389150859866 -0.0331343043722141 -0.000197850701517746" rpy="0 0 0" />
@@ -160,7 +180,11 @@
     <parent link="servo12" />
     <child link="femur1l" />
     <axis xyz="0.70941 0.70479 0" />
-    <ros2_control><joint name="femur1j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint>
+    <calibration rising="0.0" falling="0.0" />
+    <limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" />
+    <dynamics damping="0.05" friction="0.03" />
+    <safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" />
+  </joint>
   <link name="servo13">
     <inertial>
       <origin xyz="-0.0350095850454116 -0.0215653267559031 -1.98928617279256E-05" rpy="0 0 0" />
@@ -188,7 +212,11 @@
     <parent link="femur1l" />
     <child link="servo13" />
     <axis xyz="0.71124 0.70294 0" />
-    <ros2_control><joint name="tibia1j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+    <calibration rising="0.0" falling="0.0" />
+    <limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" />
+    <dynamics damping="0.04" friction="0.02" />
+    <safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" />
+  </joint>
   <link name="tibia1l">
     <inertial>
       <origin xyz="-0.455256586442077 0.29810523231319 0.0133956395769309" rpy="0 0 0" />
@@ -216,7 +244,7 @@
     <parent link="servo13" />
     <child link="tibia1l" />
     <axis xyz="0 0 0" />
-  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  </joint>
   <link name="feet1">
     <inertial>
       <origin xyz="-0.0201025875161129 -0.0114983438665156 -0.00520049603956912" rpy="0 0 0" />
@@ -272,7 +300,7 @@
   </link>
   <joint name="base_servo21" type="fixed">
     <origin xyz="0.022459 -0.037253 0.013934" rpy="1.5708 0 0" />
-    <parent link="base_link" />
+    <parent link="chassis_link" />
     <child link="servo21" />
     <axis xyz="0 0 0" />
   </joint>
@@ -303,7 +331,11 @@
     <parent link="servo21" />
     <child link="coxa2l" />
     <axis xyz="0 0 1" />
-    <ros2_control><joint name="coxa2j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+    <calibration rising="0.0" falling="0.0" />
+    <limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" />
+    <dynamics damping="0.04" friction="0.02" />
+    <safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" />
+  </joint>
   <link name="servo22">
     <inertial>
       <origin xyz="-0.364027031922669 0.221609020500305 0.0194140520671123" rpy="0 0 0" />
@@ -331,7 +363,7 @@
     <parent link="coxa2l" />
     <child link="servo22" />
     <axis xyz="0 0 0" />
-  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  </joint>
   <link name="femur2l">
     <inertial>
       <origin xyz="-0.0354343003421015 0.0279697703671011 -0.000197862210528851" rpy="0 0 0" />
@@ -359,7 +391,11 @@
     <parent link="servo22" />
     <child link="femur2l" />
     <axis xyz="0.70941 0.70479 0" />
-    <ros2_control><joint name="femur2j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint>
+    <calibration rising="0.0" falling="0.0" />
+    <limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" />
+    <dynamics damping="0.05" friction="0.03" />
+    <safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" />
+  </joint>
   <link name="servo23">
     <inertial>
       <origin xyz="-0.00573943365860688 0.00736325444199537 -1.9892851393262E-05" rpy="0 0 0" />
@@ -387,7 +423,11 @@
     <parent link="femur2l" />
     <child link="servo23" />
     <axis xyz="0.71124 0.70294 0" />
-    <ros2_control><joint name="tibia2j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+    <calibration rising="0.0" falling="0.0" />
+    <limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" />
+    <dynamics damping="0.04" friction="0.02" />
+    <safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" />
+  </joint>
   <link name="tibia2l">
     <inertial>
       <origin xyz="-0.465322797606374 0.298108957138989 0.00402166501611856" rpy="0 0 0" />
@@ -415,7 +455,7 @@
     <parent link="servo23" />
     <child link="tibia2l" />
     <axis xyz="0 0 0" />
-  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  </joint>
   <link name="feet2">
     <inertial>
       <origin xyz="-0.00469227252125851 0.00381160986770518 -0.00520049499209307" rpy="0 0 0" />
@@ -471,7 +511,7 @@
   </link>
   <joint name="base_servo31" type="fixed">
     <origin xyz="0.022459 -0.037253 0.013934" rpy="1.5708 0 0" />
-    <parent link="base_link" />
+    <parent link="chassis_link" />
     <child link="servo31" />
     <axis xyz="0 0 0" />
   </joint>
@@ -502,7 +542,11 @@
     <parent link="servo31" />
     <child link="coxa3l" />
     <axis xyz="0 0 1" />
-    <ros2_control><joint name="coxa3j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+    <calibration rising="0.0" falling="0.0" />
+    <limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" />
+    <dynamics damping="0.04" friction="0.02" />
+    <safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" />
+  </joint>
   <link name="servo32">
     <inertial>
       <origin xyz="-0.36402703192144 0.221609020505428 0.0194140519891027" rpy="0 0 0" />
@@ -530,7 +574,7 @@
     <parent link="coxa3l" />
     <child link="servo32" />
     <axis xyz="0 0 0" />
-  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  </joint>
   <link name="femur3l">
     <inertial>
       <origin xyz="-0.0966035303352529 -0.0328010961033038 -0.000197854361006805" rpy="0 0 0" />
@@ -558,7 +602,11 @@
     <parent link="servo32" />
     <child link="femur3l" />
     <axis xyz="0.70941 0.70479 0" />
-    <ros2_control><joint name="femur3j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint>
+    <calibration rising="0.0" falling="0.0" />
+    <limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" />
+    <dynamics damping="0.05" friction="0.03" />
+    <safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" />
+  </joint>
   <link name="servo33">
     <inertial>
       <origin xyz="-0.0349610352240036 -0.0215173445743047 -1.98926531113364E-05" rpy="0 0 0" />
@@ -586,7 +634,11 @@
     <parent link="femur3l" />
     <child link="servo33" />
     <axis xyz="0.71124 0.70294 0" />
-    <ros2_control><joint name="tibia3j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+    <calibration rising="0.0" falling="0.0" />
+    <limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" />
+    <dynamics damping="0.04" friction="0.02" />
+    <safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" />
+  </joint>
   <link name="tibia3l">
     <inertial>
       <origin xyz="-0.455068888121498 0.298635968504784 0.015623886049526" rpy="0 0 0" />
@@ -614,7 +666,7 @@
     <parent link="servo33" />
     <child link="tibia3l" />
     <axis xyz="0 0 0" />
-  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  </joint>
   <link name="feet3">
     <inertial>
       <origin xyz="-0.0196829574559434 -0.0110814477463609 -0.00520049734948997" rpy="0 0 0" />
@@ -670,7 +722,7 @@
   </link>
   <joint name="base_servo41" type="fixed">
     <origin xyz="0.022459 -0.037253 0.013934" rpy="1.5708 0 0" />
-    <parent link="base_link" />
+    <parent link="chassis_link" />
     <child link="servo41" />
     <axis xyz="0 0 0" />
   </joint>
@@ -701,7 +753,11 @@
     <parent link="servo41" />
     <child link="coxa4l" />
     <axis xyz="0 0 1" />
-    <ros2_control><joint name="coxa4j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+    <calibration rising="0.0" falling="0.0" />
+    <limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" />
+    <dynamics damping="0.04" friction="0.02" />
+    <safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" />
+  </joint>
   <link name="servo42">
     <inertial>
       <origin xyz="-0.36402703193112 0.221609020509639 0.019414051862226" rpy="0 0 0" />
@@ -729,7 +785,7 @@
     <parent link="coxa4l" />
     <child link="servo42" />
     <axis xyz="0 0 0" />
-  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  </joint>
   <link name="femur4l">
     <inertial>
       <origin xyz="-0.0362625840947357 0.0271468708444762 -0.000197851971891407" rpy="0 0 0" />
@@ -757,7 +813,11 @@
     <parent link="servo42" />
     <child link="femur4l" />
     <axis xyz="0.70941 0.70479 0" />
-    <ros2_control><joint name="femur4j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" /><dynamics damping="0.05" friction="0.03" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" /></joint>
+    <calibration rising="0.0" falling="0.0" />
+    <limit effort="2.0" velocity="7.5" lower="-1.57" upper="1.57" />
+    <dynamics damping="0.05" friction="0.03" />
+    <safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.57" soft_upper_limit="1.57" />
+  </joint>
   <link name="servo43">
     <inertial>
       <origin xyz="-0.00656986935940312 0.00654250971484877 -1.98928306326326E-05" rpy="0 0 0" />
@@ -785,7 +845,11 @@
     <parent link="femur4l" />
     <child link="servo43" />
     <axis xyz="0.71124 0.70294 0" />
-    <ros2_control><joint name="tibia4j"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+    <calibration rising="0.0" falling="0.0" />
+    <limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" />
+    <dynamics damping="0.04" friction="0.02" />
+    <safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" />
+  </joint>
   <link name="tibia4l">
     <inertial>
       <origin xyz="-0.455224144408688 0.29811671894911 0.0125394801599297" rpy="0 0 0" />
@@ -813,7 +877,7 @@
     <parent link="servo43" />
     <child link="tibia4l" />
     <axis xyz="0 0 0" />
-  <calibration rising="0.0" falling="0.0" /><limit effort="1.2" velocity="6.0" lower="-1.396" upper="1.396" /><dynamics damping="0.04" friction="0.02" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  </joint>
   <link name="feet4">
     <inertial>
       <origin xyz="-0.00489833883163776 0.00360688621506011 -0.00520049441859904" rpy="0 0 0" />
@@ -869,10 +933,10 @@
   </link>
   <joint name="base_cambase" type="fixed">
     <origin xyz="-0.158352952588617 -0.067572182853491 0.129818565608473" rpy="1.57079632679491 1.56559228897925 -3.14159265358978" />
-    <parent link="base_link" />
+    <parent link="chassis_link" />
     <child link="cambase" />
     <axis xyz="0 0 0" />
-  <ros2_control><joint name="base_cambase"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  </joint>
   <link name="caml1">
     <inertial>
       <origin xyz="-0.013516039389848 -0.0151119450257868 -0.0157339735136445" rpy="0 0 0" />
@@ -900,7 +964,11 @@
     <parent link="cambase" />
     <child link="caml1" />
     <axis xyz="0.41546 0.45448 0.78793" />
-    <ros2_control><joint name="cambase_caml1"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+    <calibration rising="0.0" falling="0.0" />
+    <limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" />
+    <dynamics damping="0.03" friction="0.015" />
+    <safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" />
+  </joint>
   <link name="caml2">
     <inertial>
       <origin xyz="-0.00829787092843479 -0.00125257693634678 0.0034961726278622" rpy="0 0 0" />
@@ -928,7 +996,11 @@
     <parent link="caml1" />
     <child link="caml2" />
     <axis xyz="0 1 0" />
-    <ros2_control><joint name="caml1_caml2"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+    <calibration rising="0.0" falling="0.0" />
+    <limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" />
+    <dynamics damping="0.03" friction="0.015" />
+    <safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" />
+  </joint>
   <link name="caml">
     <inertial>
       <origin xyz="0.00136224010866628 -0.000831992864671033 2.35922392732846E-15" rpy="0 0 0" />
@@ -956,7 +1028,7 @@
     <parent link="caml2" />
     <child link="caml" />
     <axis xyz="0 0 0" />
-  <ros2_control><joint name="camj"><hardware_interface>PositionJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="0.8" velocity="5.0" lower="-1.396" upper="1.396" /><dynamics damping="0.03" friction="0.015" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-1.396" soft_upper_limit="1.396" /></joint>
+  </joint>
   <link name="cell1">
     <inertial>
       <origin xyz="-0.244694104887168 0.160666796035246 -0.00618055061929496" rpy="0 0 0" />
@@ -981,7 +1053,7 @@
   </link>
   <joint name="base_cell1" type="fixed">
     <origin xyz="0.0224591225389912 -0.0372527334765431 0.0139338253382222" rpy="1.5707963267949 0 0" />
-    <parent link="base_link" />
+    <parent link="chassis_link" />
     <child link="cell1" />
     <axis xyz="0 0 0" />
   </joint>
@@ -1009,7 +1081,7 @@
   </link>
   <joint name="base_cell2" type="fixed">
     <origin xyz="0.0224591225389912 -0.0372527334765431 0.0139338253382222" rpy="1.5707963267949 0 0" />
-    <parent link="base_link" />
+    <parent link="chassis_link" />
     <child link="cell2" />
     <axis xyz="0 0 0" />
   </joint>
@@ -1037,7 +1109,7 @@
   </link>
   <joint name="base_lipo" type="fixed">
     <origin xyz="0.03786685284412 -0.28824701343813 0.083860829373268" rpy="-3.14159265358973 0 -1.5707963267949" />
-    <parent link="base_link" />
+    <parent link="chassis_link" />
     <child link="lipo" />
     <axis xyz="0 0 0" />
   </joint>
@@ -1065,7 +1137,7 @@
   </link>
   <joint name="imuj" type="fixed">
     <origin xyz="0.0224591225389912 -0.0372527334765431 0.0139338253382222" rpy="1.5707963267949 0 0" />
-    <parent link="base_link" />
+    <parent link="chassis_link" />
     <child link="imul" />
     <axis xyz="0 0 0" />
   </joint>
@@ -1093,7 +1165,7 @@
   </link>
   <joint name="base_cell3" type="fixed">
     <origin xyz="-0.254734982348177 -0.031072182877828 0.088600621373457" rpy="0 0 0" />
-    <parent link="base_link" />
+    <parent link="chassis_link" />
     <child link="cell3" />
     <axis xyz="0 0 0" />
   </joint>
@@ -1121,7 +1193,7 @@
   </link>
   <joint name="base_stepper" type="fixed">
     <origin xyz="0.022459 -0.037253 0.013934" rpy="1.5708 0 0" />
-    <parent link="base_link" />
+    <parent link="chassis_link" />
     <child link="stepper" />
     <axis xyz="0 0 0" />
   </joint>
@@ -1211,7 +1283,7 @@
     <parent link="flange" />
     <child link="lidarmount" />
     <axis xyz="0 0 0" />
-  <ros2_control><joint name="flange_lidarmount"><hardware_interface>EffortJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="2.5" velocity="3.5" lower="-6.283" upper="6.283" /><dynamics damping="0.02" friction="0.01" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-6.283" soft_upper_limit="6.283" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="2.5" velocity="3.5" lower="-6.283" upper="6.283" /><dynamics damping="0.02" friction="0.01" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-6.283" soft_upper_limit="6.283" /></joint>
+  </joint>
   <!-- 
   <link name="lidarl">
     <inertial>
@@ -1240,7 +1312,7 @@
     <parent link="lidarmount" />
     <child link="lidarl" />
     <axis xyz="0 0 0" />
-  <ros2_control><joint name="lidarmount_lidar"><hardware_interface>EffortJointInterface</hardware_interface><calibration rising="0.0" falling="0.0" /><limit effort="2.5" velocity="3.5" lower="-6.283" upper="6.283" /><dynamics damping="0.02" friction="0.01" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-6.283" soft_upper_limit="6.283" /></joint></ros2_control><calibration rising="0.0" falling="0.0" /><limit effort="2.5" velocity="3.5" lower="-6.283" upper="6.283" /><dynamics damping="0.02" friction="0.01" /><safety_controller k_position="20.0" k_velocity="10.0" soft_lower_limit="-6.283" soft_upper_limit="6.283" /></joint>
+  </joint>
   -->
   <link name="encoder">
     <inertial>
@@ -1266,7 +1338,7 @@
   </link>
   <joint name="base_encoder" type="fixed">
     <origin xyz="0.0224591225389912 -0.0372527334765431 0.0139338253382222" rpy="1.5707963267949 0 0" />
-    <parent link="base_link" />
+    <parent link="chassis_link" />
     <child link="encoder" />
     <axis xyz="0 0 0" />
   </joint>

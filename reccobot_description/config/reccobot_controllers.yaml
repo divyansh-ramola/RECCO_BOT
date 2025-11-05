@@ -11,6 +11,9 @@ controller_manager:
     camera_controller:
       type: position_controllers/JointGroupPositionController
 
+    lidar_controller:
+      type: position_controllers/JointGroupPositionController
+
 leg_controller:
   ros__parameters:
     joints:
@@ -28,6 +31,9 @@ leg_controller:
       - tibia4j
     command_interfaces:
       - position
+    state_interfaces:
+      - position
+    close_loop_rate: 500
 
 camera_controller:
   ros__parameters:
@@ -36,3 +42,15 @@ camera_controller:
       - caml1_caml2
     command_interfaces:
       - position
+    state_interfaces:
+      - position  
+    close_loop_rate: 500
+
+lidar_controller:
+  ros__parameters:
+    joints:
+      - base_coupling
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position    

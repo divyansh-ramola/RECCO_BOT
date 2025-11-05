@@ -1,4 +1,8 @@
-<!-- Gazebo tuning snippet for reccobot: insert into your URDF under <robot> -->
+<?xml version="1.0"?>
+<!-- Gazebo tuning snippet for reccobot -->
+<!-- Note: ros2_control plugin is defined in reccobot_ros2_control.xacro -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
 <gazebo reference="coxa1j">
   <kp>80</kp>
   <ki>0.5</ki>
@@ -26,7 +30,7 @@
   <maxEffort>0.98</maxEffort>
   <provideFeedback>true</provideFeedback>
 </gazebo>
-<gazebo reference="foot1j">
+<gazebo reference="feet1j">
   <kp>80</kp>
   <ki>0.5</ki>
   <kd>2.0</kd>
@@ -62,7 +66,7 @@
   <maxEffort>0.98</maxEffort>
   <provideFeedback>true</provideFeedback>
 </gazebo>
-<gazebo reference="foot2j">
+<gazebo reference="feet2j">
   <kp>80</kp>
   <ki>0.5</ki>
   <kd>2.0</kd>
@@ -98,7 +102,7 @@
   <maxEffort>0.98</maxEffort>
   <provideFeedback>true</provideFeedback>
 </gazebo>
-<gazebo reference="foot3j">
+<gazebo reference="feet3j">
   <kp>80</kp>
   <ki>0.5</ki>
   <kd>2.0</kd>
@@ -134,7 +138,7 @@
   <maxEffort>0.98</maxEffort>
   <provideFeedback>true</provideFeedback>
 </gazebo>
-<gazebo reference="foot4j">
+<gazebo reference="feet4j">
   <kp>80</kp>
   <ki>0.5</ki>
   <kd>2.0</kd>
@@ -152,12 +156,15 @@
   <maxEffort>0.18</maxEffort>
   <provideFeedback>true</provideFeedback>
 </gazebo>
-<gazebo reference="lidar1j">
+<!-- Lidar rotation joint (base_coupling) -->
+<gazebo reference="base_coupling">
   <kp>5</kp>
   <ki>0.0</ki>
   <kd>0.5</kd>
   <friction>0.01</friction>
   <damping>0.02</damping>
-  <maxEffort>0.255</maxEffort>
+  <maxEffort>0.5</maxEffort>
   <provideFeedback>true</provideFeedback>
 </gazebo>
+
+</robot>

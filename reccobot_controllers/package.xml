@@ -3,11 +3,25 @@
 <package format="3">
   <name>reccobot_controllers</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Controller launch files for reccobot quadruped robot</description>
   <maintainer email="2022ume1557@mnit.ac.in">divyansh</maintainer>
-  <license>TODO: License declaration</license>
+  <license>BSD-3-Clause</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Dependencies for launch files -->
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  
+  <!-- ros2_control dependencies -->
+  <exec_depend>ros2_control</exec_depend>
+  <exec_depend>ros2_controllers</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
+  
+  <!-- Package dependencies -->
+  <exec_depend>reccobot_description</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

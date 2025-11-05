@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="reccobot">
 
+  <!-- Ignition/GZ plugin used unconditionally (launch uses ros_gz_sim) -->
+
   <xacro:property name="PI" value="3.14159265359" />
   <xacro:property name="limit_servo" value="1.396" />
   <xacro:property name="limit_femur" value="${PI / 2}" />
@@ -115,9 +117,18 @@
       </command_interface>
       <state_interface name="position"/>
     </joint>
+
+    <!-- Lidar rotation joint -->
+    <joint name="base_coupling">
+      <command_interface name="position">
+        <param name="min">-6.28</param>
+        <param name="max">6.28</param>
+      </command_interface>
+      <state_interface name="position"/>
+    </joint>
   </ros2_control>
 
-  <!-- Ignition Gazebo ROS 2 Control plugin (Fortress/Garden via ros_gz_sim) -->
+  <!-- ros2_control plugin injection for Ignition Gazebo (ros_gz_sim) -->
   <gazebo>
     <plugin name="ign_ros2_control::IgnitionROS2ControlPlugin" filename="libign_ros2_control-system.so">
       <parameters>$(find reccobot_description)/config/reccobot_controllers.yaml</parameters>

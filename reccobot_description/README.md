@@ -44,7 +44,7 @@ reccobot_description/
 │   ├── gazebo.launch           # Gazebo simulation launch (ROS 1)
 │   └── gazebo.launch.py        # Gazebo simulation launch (ROS 2)
 ├── meshes/                     # STL mesh files for all robot links
-│   ├── base_link.STL
+│   ├── chassis_link.STL
 │   ├── servo*.STL
 │   ├── coxa*.STL
 │   ├── femur*.STL
@@ -150,7 +150,7 @@ ros2 run robot_state_publisher robot_state_publisher \
 Check that all transforms are being published:
 
 ```bash
-ros2 run tf2_ros tf2_echo world base_link
+ros2 run tf2_ros tf2_echo world chassis_link
 ```
 
 View the complete TF tree:
@@ -180,19 +180,21 @@ Find the commented section near the top of the file:
 ```xml
 <!-- 
   ROTATION ADJUSTMENT: 
-  To modify the robot's orientation in the world frame, change the 'rpy' values below.
-  Current: rpy="0 0 1.5708" rotates the robot 90 degrees around Z-axis
+  The robot body is represented by "chassis_link". To adjust its orientation relative to the root "base_link"
+  (an empty helper link), change the RPY on the fixed joint connecting them in the URDF:
+
+  <joint name="base_to_chassis" type="fixed">
+    <parent link="base_link"/>
+    <child link="chassis_link"/>
+    <origin xyz="0.0 0.0 0.15" rpy="-1.5708 0 0" />
+  </joint>
+
   Format: rpy="roll pitch yaw" in radians
   Common values: 
     - 90 degrees = 1.5708 radians
     - 180 degrees = 3.14159 radians
     - -90 degrees = -1.5708 radians
 -->
-<joint name="world_to_base" type="fixed">
-  <parent link="world"/>
-  <child link="base_link"/>
-  <origin xyz="0 0 0" rpy="0 0 1.5708"/>
-</joint>
 ```
 
 ### Common Rotation Examples
@@ -270,7 +272,8 @@ To visualize the URDF without installing ROS locally:
 ### Coordinate Frames
 
 - **world**: Fixed world reference frame
-- **base_link**: Robot body center
+- **chassis_link**: Robot body center (use this as the base frame)
+- **base_link**: Empty helper root frame (fixed parent of chassis_link)
 - **leg frames**: coxa, femur, tibia, feet (for each of 4 legs)
 - **sensor frames**: lidar, camera, IMU
 

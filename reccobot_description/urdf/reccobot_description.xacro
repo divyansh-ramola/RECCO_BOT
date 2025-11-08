@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="reccobot">
+
+    <xacro:arg name="use_ros2_control" default="true"/>
+    <xacro:arg name="sim_mode" default="false"/>
+
+    <!-- Include the base robot structure -->
+    <xacro:include filename="reccobot_core.xacro" />
+
+    <!-- Include ros2_control configuration -->
+    <xacro:if value="$(arg use_ros2_control)">
+        <xacro:include filename="reccobot_ros2_control.xacro" />
+    </xacro:if>
+
+    <!-- Include Gazebo joint tuning -->
+    <xacro:include filename="reccobot_gazebo.xacro" />
+    
+    <!-- Include sensor definitions -->
+    <xacro:include filename="lidar.xacro" />
+    <xacro:include filename="camera.xacro" />
+    
+</robot>

@@ -16,8 +16,8 @@ def generate_launch_description():
     # xacro to URDF
     model_arg = DeclareLaunchArgument(
         name="model",
-        default_value=os.path.join(pkg_reccobot_description, "urdf", "reccobot_description.urdf"),
-        description="Path to URDF"
+        default_value=os.path.join(pkg_reccobot_description, "urdf", "reccobot_description.xacro"),
+        description="Path to robot XACRO file"
     )
 
     # Choose simulator (Ignition/GZ vs Gazebo Classic)
@@ -77,11 +77,16 @@ def generate_launch_description():
         value=[workspace_share_parent]
     )
 
+    # World file configuration
+    default_world_path = os.path.join(pkg_reccobot_description, 'worlds', 'empty.sdf')
+    world_arg = DeclareLaunchArgument(
+        'world',
+        default_value=default_world_path,
+        description='Path to world SDF file'
+    )
+
     # Launch Ignition Gazebo
     # Use server-only (-s) when headless to avoid EGL errors; otherwise start GUI
-    gz_args = [
-        '-s -r empty.sdf' if LaunchConfiguration('headless') == 'true' else '-r empty.sdf'
-    ]
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
@@ -90,7 +95,7 @@ def generate_launch_description():
                 'gz_sim.launch.py'
             ])
         ]),
-        launch_arguments={'gz_args': gz_args[0]}.items(),
+        launch_arguments={'gz_args': ['-r ', LaunchConfiguration('world')]}.items(),
         condition=IfCondition(
             PythonExpression([
                 "'", LaunchConfiguration('use_ignition'), "' == 'true' and '",
@@ -166,12 +171,25 @@ def generate_launch_description():
         condition=UnlessCondition(LaunchConfiguration('use_ignition'))
     )
 
-    # Bridge /clock
-    clock_bridge = Node(
+    # Bridge all topics using config file
+    bridge_params = os.path.join(pkg_reccobot_description, 'config', 'gz_bridge.yaml')
+    ros_gz_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
-        # Fortress uses ignition.msgs.* types; newer distros accept gz.msgs.*. Use ignition.* to match installed libs.
-        arguments=["/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock]"],
+        arguments=[
+            '--ros-args',
+            '-p',
+            f'config_file:={bridge_params}',
+        ],
+        output="screen",
+        condition=IfCondition(LaunchConfiguration('use_ignition'))
+    )
+
+    # Bridge camera images separately
+    ros_gz_image_bridge = Node(
+        package="ros_gz_image",
+        executable="image_bridge",
+        arguments=["/camera/image_raw"],
         output="screen",
         condition=IfCondition(LaunchConfiguration('use_ignition'))
     )
@@ -181,9 +199,10 @@ def generate_launch_description():
         use_ignition_arg,
         headless_arg,
         start_sim_arg,
-    spawn_z_arg,
+        spawn_z_arg,
         entity_name_arg,
         delete_existing_arg,
+        world_arg,
         gazebo_resource_path_gz,
         gazebo_resource_path_ign,
         gz_sim,
@@ -192,5 +211,6 @@ def generate_launch_description():
         remove_entity,
         spawn_entity,
         spawn_entity_classic,
-        clock_bridge
+        ros_gz_bridge,
+        ros_gz_image_bridge
     ])

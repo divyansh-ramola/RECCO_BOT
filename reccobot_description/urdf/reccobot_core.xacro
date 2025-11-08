@@ -1,20 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<robot name="reccobot_description" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <!-- Simulator selection forwarded from launch: Ignition/GZ vs Gazebo Classic -->
-  <xacro:arg name="is_ignition" default="true"/>
-
-  <!-- Sensor definitions and Gazebo plugins are embedded directly in this URDF -->
-  <!-- The xacro includes below are commented out to prevent xacro from ignoring the main robot body -->
-  <!--
-  <xacro:include filename="$(find reccobot_description)/urdf/lidar.xacro" />
-  <xacro:include filename="$(find reccobot_description)/urdf/camera.xacro" />
-  <xacro:include filename="$(find reccobot_description)/urdf/reccobot_ros2_control.xacro" />
-  <xacro:include filename="$(find reccobot_description)/urdf/reccobot_gazebo.xacro" />
-  -->
-  
-  <!-- World link - fixed reference frame -->
-
+  <!-- Base robot structure - links and joints only -->
+  <!-- Sensors and Gazebo plugins are in separate xacro files -->
   
   <!-- 
     ROTATION ADJUSTMENT: 
@@ -1029,35 +1017,6 @@
     <axis xyz="0 0 0" />
   </joint>
   
-  <gazebo reference="caml">
-    <sensor name="camera" type="camera">
-      <pose> 0 0 0 0 0 0 </pose>
-      <visualize>true</visualize>
-      <always_on>true</always_on>
-      <update_rate>30</update_rate>
-      <camera>
-        <camera_info_topic>camera/camera_info</camera_info_topic>
-        <horizontal_fov>1.0855</horizontal_fov>
-        <image>
-          <width>640</width>
-          <height>480</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.1</near>
-          <far>100</far>
-        </clip>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.007</stddev>
-        </noise>
-      </camera>
-      <topic>camera/image_raw</topic>
-      <gz_frame_id>caml</gz_frame_id>
-    </sensor>
-  </gazebo>
-  
   <link name="cell1">
     <inertial>
       <origin xyz="-0.244694104887168 0.160666796035246 -0.00618055061929496" rpy="0 0 0" />
@@ -1314,66 +1273,7 @@
     <axis xyz="0 0 0" />
   </joint>
   
-  <link name="lidarl">
-    <inertial>
-      <origin xyz="-0.256143176414863 0.1283285607983 0.143452449615597" rpy="0 0 0" />
-      <mass value="0.109998846473485" />
-      <inertia ixx="4.02318810582621E-05" ixy="-7.76004870962997E-06" ixz="-7.75960890763623E-12" iyy="4.92541598732305E-05" iyz="-4.46080940664635E-12" izz="3.57666279058567E-05" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://reccobot_description/meshes/lidarl.STL" />
-      </geometry>
-      <material name="">
-        <color rgba="0.659 0.333 0.969 1.0" />
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://reccobot_description/meshes/lidarl.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <joint name="lidarmount_lidar" type="fixed">
-    <origin xyz="0 0 0" rpy="0 0 0" />
-    <parent link="lidarmount" />
-    <child link="lidarl" />
-    <axis xyz="0 0 0" />
-  </joint>
-  
-  <gazebo reference="lidarl">
-    <material>Gazebo/Black</material>
-    <sensor name="laser" type="gpu_ray">
-      <pose> 0 0 0 0 0 0 </pose>
-      <visualize>true</visualize>
-      <always_on>true</always_on>
-      <update_rate>10</update_rate>
-      <ray>
-        <scan>
-          <horizontal>
-            <samples>500</samples>
-            <resolution>1</resolution>
-            <min_angle>-3.14159</min_angle>
-            <max_angle>3.14159</max_angle>
-          </horizontal>
-        </scan>
-        <range>
-          <min>0.05</min>
-          <max>12.0</max>
-          <resolution>0.015</resolution>
-        </range>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.01</stddev>
-        </noise>
-      </ray>
-      <topic>scan</topic>
-      <gz_frame_id>lidarl</gz_frame_id>
-    </sensor>
-  </gazebo>
+  <!-- lidarl link and joint are provided by lidar.xacro -->
   
   <link name="encoder">
     <inertial>

@@ -18,6 +18,15 @@ install(DIRECTORY
   DESTINATION share/${PROJECT_NAME}/
 )
 
+# Install scripts
+install(PROGRAMS
+  scripts/publish_frame_axes.py
+  scripts/imu_monitor.py
+  scripts/quick_imu_monitor.sh
+  scripts/fast_imu.sh
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()

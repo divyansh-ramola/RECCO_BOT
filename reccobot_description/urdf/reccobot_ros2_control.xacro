@@ -126,6 +126,20 @@
       </command_interface>
       <state_interface name="position"/>
     </joint>
+
+    <!-- Passive feet joints - state-only (no command interface) -->
+    <joint name="feet1j">
+      <state_interface name="position"/>
+    </joint>
+    <joint name="feet2j">
+      <state_interface name="position"/>
+    </joint>
+    <joint name="feet3j">
+      <state_interface name="position"/>
+    </joint>
+    <joint name="feet4j">
+      <state_interface name="position"/>
+    </joint>
   </ros2_control>
 
   <!-- ros2_control plugin injection for Gazebo (ros_gz_sim) -->

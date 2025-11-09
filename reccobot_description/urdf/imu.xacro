@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+
+  <link name="imu_sensor">
+  </link>
+    
+    <joint name="imu_imu_sensor" type="fixed">
+        <!-- Position at actual sensor location, rotate 90° around Y (vertical scan) and 45° around Z (yaw) -->
+        <origin xyz="-0.213501631412028 0.113837295066825 0.0161781119117345" rpy="0 0 0" />
+        <parent link="imul" />
+        <child link="imu_sensor" />
+    </joint>
+
+
+
+  <!-- IMU sensor attached to imul link -->
+  <gazebo reference="imu_sensor">
+    <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <visualize>true</visualize>
+      <topic>imu</topic>
+      <imu>
+        <angular_velocity>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>2e-4</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>2e-4</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>2e-4</stddev>
+            </noise>
+          </z>
+        </angular_velocity>
+        <linear_acceleration>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>1.7e-2</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>1.7e-2</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>1.7e-2</stddev>
+            </noise>
+          </z>
+        </linear_acceleration>
+      </imu>
+      <enable_metrics>true</enable_metrics>
+      <gz_frame_id>imu_sensor</gz_frame_id>
+      <frame_name>imu_sensor</frame_name>
+    </sensor>
+    
+    <sensor name="mag_sensor" type="magnetometer">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <visualize>false</visualize>
+      <topic>magnetometer</topic>
+      <magnetometer>
+        <x>
+          <noise type="gaussian">
+            <mean>0.0</mean>
+            <stddev>1e-3</stddev>
+          </noise>
+        </x>
+        <y>
+          <noise type="gaussian">
+            <mean>0.0</mean>
+            <stddev>1e-3</stddev>
+          </noise>
+        </y>
+        <z>
+          <noise type="gaussian">
+            <mean>0.0</mean>
+            <stddev>1e-3</stddev>
+          </noise>
+        </z>
+      </magnetometer>
+    </sensor>
+  </gazebo>
+
+</robot>

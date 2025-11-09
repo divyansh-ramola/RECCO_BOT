@@ -1,7 +1,18 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <gazebo reference="caml">
+    <link name="dummy_camera_link">
+    </link>
+    
+    <joint name="caml_dummy_camera" type="fixed">
+        <!-- Position at actual sensor location, rotate 90° around Y (vertical scan) and 45° around Z (yaw) -->
+        <origin xyz="0 0 0" rpy="1.57 0 0" />
+        <parent link="caml" />
+        <child link="dummy_camera_link" />
+    </joint>
+
+
+    <gazebo reference="dummy_camera_link">
         <sensor name="camera" type="camera">
             <pose> 0 0 0 0 0 0 </pose>
             <visualize>true</visualize>
@@ -25,6 +36,8 @@
                     <stddev>0.007</stddev>
                 </noise>
             </camera>
+            <gz_frame_id>dummy_camera_link</gz_frame_id>
+            <frame_name>dummy_camera_link</frame_name>
             <topic>camera/image_raw</topic>
             
         </sensor>

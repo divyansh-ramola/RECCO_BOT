@@ -194,6 +194,38 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration('use_ignition'))
     )
 
+    # Spawn joint state broadcaster controller
+    joint_state_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster"],
+        output="screen"
+    )
+
+    # Spawn leg controller
+    leg_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["leg_controller"],
+        output="screen"
+    )
+
+    # Spawn camera controller
+    camera_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["camera_controller"],
+        output="screen"
+    )
+
+    # Spawn lidar controller
+    lidar_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["lidar_controller"],
+        output="screen"
+    )
+
     return LaunchDescription([
         model_arg,
         use_ignition_arg,
@@ -212,5 +244,9 @@ def generate_launch_description():
         spawn_entity,
         spawn_entity_classic,
         ros_gz_bridge,
-        ros_gz_image_bridge
+        ros_gz_image_bridge,
+        joint_state_broadcaster_spawner,
+        leg_controller_spawner,
+        camera_controller_spawner,
+        lidar_controller_spawner
     ])

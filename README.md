@@ -14,7 +14,9 @@
 
 
 
-![Gazebo Simulation](images/movemet.gif)![LiDAR 3D Mapping](images/lidar_mapping.gif)## Table of Contents
+![Gazebo Simulation](images/movemet.gif)
+
+## Table of Contents
 
 
 
@@ -30,7 +32,7 @@ A ROS 2 workspace containing the RECCOBOT project - a versatile quadruped robot 
 
 
 
-## 🌟 Key Features![Gazebo Simulation](images/movemet.gif)- [Prerequisites](#prerequisites)
+## 🌟 Key Features
 
 
 

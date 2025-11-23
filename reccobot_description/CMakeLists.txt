@@ -20,10 +20,6 @@ install(DIRECTORY
 
 # Install scripts
 install(PROGRAMS
-  scripts/publish_frame_axes.py
-  scripts/imu_monitor.py
-  scripts/quick_imu_monitor.sh
-  scripts/fast_imu.sh
   DESTINATION lib/${PROJECT_NAME}
 )
 

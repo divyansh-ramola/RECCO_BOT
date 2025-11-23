@@ -1,6 +1,6 @@
 # reccobot_description
 
-A ROS 2 package containing the complete robot description for RECCO_BOT, including URDF files, 3D mesh models, and visualization configurations for simulation and display in RViz.
+A ROS 2 package containing the complete robot description for RECCO_BOT, including URDF files, 3D mesh models, visualization configurations, Gazebo simulation, and deep reinforcement learning training scripts.
 
 ## Table of Contents
 
@@ -22,8 +22,10 @@ This package defines the complete kinematic and visual description of the RECCO_
 
 - **URDF Model**: Complete robot description with 12 DOF leg system
 - **3D Meshes**: High-quality STL mesh files for all robot components
-- **Launch Files**: Pre-configured launch files for visualization
+- **Launch Files**: Pre-configured launch files for visualization and Gazebo simulation
 - **RViz Configuration**: Custom RViz setup with TF frame display
+- **Deep RL Training**: PPO-based reinforcement learning scripts for quadruped locomotion
+- **Gazebo Worlds**: Custom simulation environments for training and testing
 
 The robot features a world-fixed reference frame with adjustable orientation, making it suitable for both visualization and simulation environments.
 
@@ -39,9 +41,7 @@ reccobot_description/
 ├── config/
 │   └── joint_names_reccobot_description.yaml
 ├── launch/
-│   ├── display.launch          # ROS 1 launch file (legacy)
-│   ├── display.launch.py       # ROS 2 Python launch file
-│   ├── gazebo.launch           # Gazebo simulation launch (ROS 1)
+│   ├── display.launch.py       # ROS 2 Python launch file for RViz
 │   └── gazebo.launch.py        # Gazebo simulation launch (ROS 2)
 ├── meshes/                     # STL mesh files for all robot links
 │   ├── chassis_link.STL
@@ -53,10 +53,17 @@ reccobot_description/
 │   ├── lidar*.STL
 │   ├── cam*.STL
 │   └── ...
+├── scripts/                    # Deep RL training scripts
+│   ├── train_walking.py        # PPO training for locomotion
+│   ├── reccobot_rl_env.py      # Custom Gymnasium environment
+│   └── test_trained_model.py   # Model evaluation script
 ├── urdf/
 │   ├── reccobot_description.urdf    # Main robot description
 │   ├── reccobot_gazebo.urdf         # Gazebo-specific URDF
 │   └── reccobot_ros2_control.urdf   # ROS 2 Control configuration
+├── worlds/                     # Gazebo world files
+│   └── *.world                 # Custom simulation environments
+├── rviz/                       # RViz configuration files
 └── urdf.rviz                   # RViz configuration file
 ```
 
@@ -282,6 +289,105 @@ To visualize the URDF without installing ROS locally:
 - **Revolute joints**: All leg joints with specified position limits
 - **Fixed joints**: Sensor mounts and structural connections
 - **Continuous joints**: LiDAR rotation (unlimited rotation)
+
+---
+
+## Deep Reinforcement Learning Training
+
+This package includes complete scripts for training a quadruped walking behavior using deep reinforcement learning.
+
+### Training Script
+
+The `scripts/train_walking.py` script provides a complete PPO-based training pipeline:
+
+**Features:**
+- Custom Gymnasium environment for RECCOBOT
+- PPO (Proximal Policy Optimization) algorithm
+- Automatic model checkpointing
+- Tensorboard logging and monitoring
+- Evaluation callbacks
+
+### Environment Details
+
+The custom `ReccobotEnv` (defined in `scripts/reccobot_rl_env.py`) provides:
+
+- **Observation Space**: 39 dimensions
+  - Joint positions (12)
+  - Joint velocities (12)
+  - Body orientation (4 - quaternion)
+  - Body angular velocity (3)
+  - Body linear velocity (3)
+  - Target velocity (1)
+  - Ground contact sensors (4)
+
+- **Action Space**: 12 dimensions
+  - Joint position commands for all 12 leg joints
+
+- **Reward Function**:
+  ```
+  reward = forward_velocity_reward
+         - energy_consumption_penalty
+         - deviation_from_upright_penalty
+         + stability_bonus
+         - excessive_joint_velocity_penalty
+  ```
+
+### Training Workflow
+
+1. **Start Gazebo Simulation:**
+   ```bash
+   ros2 launch reccobot_description gazebo.launch.py
+   ```
+
+2. **Run Training Script:**
+   ```bash
+   cd ~/reccobot_ws/src/reccobot_description/scripts
+   python3 train_walking.py
+   ```
+
+3. **Monitor Training Progress:**
+   ```bash
+   tensorboard --logdir logs/
+   ```
+   Then open http://localhost:6006 in your browser
+
+### Training Parameters
+
+Key hyperparameters in `train_walking.py`:
+
+```python
+total_timesteps = 1_000_000    # Total training steps
+learning_rate = 3e-4           # Adam learning rate
+n_steps = 2048                 # Steps per policy update
+batch_size = 64                # Minibatch size
+n_epochs = 10                  # Optimization epochs per update
+gamma = 0.99                   # Discount factor
+clip_range = 0.2               # PPO clipping parameter
+```
+
+### Testing Trained Models
+
+Evaluate a trained model:
+
+```bash
+cd ~/reccobot_ws/src/reccobot_description/scripts
+python3 test_trained_model.py --model models/reccobot_walking_final.zip --episodes 10
+```
+
+### Model Checkpoints
+
+Models are automatically saved to `scripts/models/`:
+- Periodic checkpoints every 10,000 steps
+- Best model based on evaluation performance
+- Final model after training completion
+
+### Dependencies
+
+Install required Python packages for training:
+
+```bash
+pip3 install stable-baselines3 gymnasium torch tensorboard
+```
 
 ---
 

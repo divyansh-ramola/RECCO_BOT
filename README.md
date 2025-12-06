@@ -1,4 +1,4 @@
-# RECCOBOT - Quadruped Robot with 3D Mapping and Deep RL# RECCOBOT - Quadruped Robot with 3D Mapping and Deep RL# RECCO_BOT
+# RECCOBOT - Quadruped Robot with 3D Mapping and Deep RL
 
 
 

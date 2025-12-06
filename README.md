@@ -24,7 +24,7 @@
 
 
 
-</div>*Real-time 3D mapping using rotating 2D LiDAR*- [Overview](#overview)
+</div>*Real-time 3D mapping using rotating 2D LiDAR*
 
 
 

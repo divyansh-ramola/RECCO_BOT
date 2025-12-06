@@ -659,7 +659,7 @@ For questions, issues, or feature requests, please open an issue on GitHub.
 
 <div align="center">
 
-**Built with ❤️ using ROS 2 and Python**
+**Built with ❤️ using ROS 2 and Python and C++**
 
 ⭐ Star this repository if you find it helpful!
 

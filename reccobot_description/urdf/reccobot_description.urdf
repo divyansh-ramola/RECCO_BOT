@@ -1253,7 +1253,7 @@
     <parent link="stepper" />
     <child link="coupling" />
     <axis xyz="1 0 0" />
-    <limit lower="-6.28" upper="6.25" effort="0.5" velocity="0.6" />
+    <limit lower="-6.5" upper="6.5" effort="0.5" velocity="6.0" />
     <dynamics damping="0.02" friction="0.01" />
     <safety_controller soft_upper_limit="6" soft_lower_limit="-6" k_position="5" k_velocity="0.2" />
   </joint>

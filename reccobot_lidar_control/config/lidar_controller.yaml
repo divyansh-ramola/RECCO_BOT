@@ -1,0 +1,23 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 50 # Hz
+
+    lidar_position_controller:
+      type: reccobot_lidar_control/LidarPositionController
+
+lidar_position_controller:
+  ros__parameters:
+    joint: "lidar_rotation_joint"
+    
+    # Command timeout (seconds) - if no command received, switches to continuous scan or holds position
+    command_timeout: 0.5
+
+    # Continuous scanning mode
+    continuous_scan: false
+
+    # Scan speed in radians per second (1.0 rad/s ≈ 57.3 deg/s)
+    scan_speed: 3.0
+    
+    # Scan range in radians
+    scan_min_angle: 0.0
+    scan_max_angle: 6.28318530718  # 2*PI (360 degrees)

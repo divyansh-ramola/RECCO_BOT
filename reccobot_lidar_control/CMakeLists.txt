@@ -10,8 +10,20 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(hardware_interface REQUIRED)
+find_package(pluginlib REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(controller_interface REQUIRED)
+find_package(realtime_tools REQUIRED)
+
+find_package(Boost REQUIRED)
 
 add_executable(lidar_rotation_node src/lidar_rotation_node.cpp)
+add_executable(lidar_to_cloud src/lidar_to_cloud.cpp)
+add_executable(arduino_lidar_driver_node src/arduino_lidar_driver_node.cpp)
 target_include_directories(lidar_rotation_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
@@ -22,13 +34,84 @@ ament_target_dependencies(
   "std_msgs"
   "sensor_msgs"
 )
+ament_target_dependencies(lidar_to_cloud
+  "rclcpp"
+  "sensor_msgs"
+  "tf2_ros"
+  "tf2"
+  "tf2_geometry_msgs"
+)
 
-install(TARGETS lidar_rotation_node
+target_include_directories(arduino_lidar_driver_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_compile_features(arduino_lidar_driver_node PUBLIC c_std_99 cxx_std_17)
+ament_target_dependencies(arduino_lidar_driver_node
+  "rclcpp"
+  "sensor_msgs")
+
+target_link_libraries(arduino_lidar_driver_node
+  Boost::boost)
+
+# Build Arduino hardware interface plugin
+add_library(arduino_lidar_hardware SHARED
+  src/arduino_lidar_hardware.cpp
+)
+target_include_directories(arduino_lidar_hardware PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_compile_features(arduino_lidar_hardware PUBLIC cxx_std_17)
+ament_target_dependencies(arduino_lidar_hardware
+  "hardware_interface"
+  "pluginlib"
+  "rclcpp"
+  "rclcpp_lifecycle")
+
+# Export hardware plugin
+pluginlib_export_plugin_description_file(hardware_interface arduino_lidar_hardware_plugin.xml)
+
+# Build LiDAR Position Controller
+add_library(lidar_position_controller SHARED
+  src/lidar_position_controller.cpp
+)
+target_include_directories(lidar_position_controller PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_compile_features(lidar_position_controller PUBLIC cxx_std_17)
+ament_target_dependencies(lidar_position_controller
+  "controller_interface"
+  "pluginlib"
+  "rclcpp"
+  "rclcpp_lifecycle"
+  "realtime_tools"
+  "std_msgs")
+
+# Export controller plugin
+pluginlib_export_plugin_description_file(controller_interface lidar_controller_plugin.xml)
+
+install(TARGETS lidar_rotation_node lidar_to_cloud arduino_lidar_driver_node
   DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS arduino_lidar_hardware lidar_position_controller
+  DESTINATION lib)
 
 # Install launch files
 install(DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}/)
+
+# Install config files
+install(DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}/)
+
+# Install arduino sketches
+install(DIRECTORY arduino
+  DESTINATION share/${PROJECT_NAME}/)
+
+# Install Python scripts
+install(PROGRAMS
+  scripts/lidar_control_example.py
+  scripts/test_arduino_connection.py
+  DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

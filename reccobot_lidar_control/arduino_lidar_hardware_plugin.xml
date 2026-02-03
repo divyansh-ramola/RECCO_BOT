@@ -1,0 +1,8 @@
+<library path="arduino_lidar_hardware">
+  <class name="reccobot_lidar_control/ArduinoLidarHardware" type="reccobot_lidar_control::ArduinoLidarHardware" base_class_type="hardware_interface::SystemInterface">
+    <description>
+      Arduino-based hardware interface for lidar rotation joint.
+      Communicates via TCP to read joint state and send commands.
+    </description>
+  </class>
+</library>

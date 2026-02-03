@@ -158,12 +158,12 @@
 </gazebo>
 <!-- Lidar rotation joint (base_coupling) -->
 <gazebo reference="base_coupling">
-  <kp>5</kp>
-  <ki>0.0</ki>
-  <kd>0.5</kd>
+  <kp>100</kp>
+  <ki>0.5</ki>
+  <kd>5.0</kd>
   <friction>0.01</friction>
   <damping>0.02</damping>
-  <maxEffort>0.5</maxEffort>
+  <maxEffort>5.0</maxEffort>
   <provideFeedback>true</provideFeedback>
 </gazebo>
 

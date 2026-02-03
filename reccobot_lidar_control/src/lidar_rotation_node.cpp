@@ -20,7 +20,7 @@ public:
       20ms, std::bind(&LidarRotationNode::timer_callback, this));
 
     // Parameters
-    this->declare_parameter("rotation_speed", 0.5);  // radians per second
+    this->declare_parameter("rotation_speed", 1.0);  // radians per second
     this->declare_parameter("min_angle", -6.28);     // radians (~-360 degrees)
     this->declare_parameter("max_angle", 6.25);      // radians (~360 degrees)
 
@@ -37,18 +37,28 @@ private:
   void timer_callback()
   {
     // Update position based on direction and speed
-    double dt = 0.02;  // 20ms = 0.02 seconds
+    // dt is derived from the actual timer period instead of being hard-coded
+    static rclcpp::Time last_time = this->now();
+    rclcpp::Time now = this->now();
+    double dt = (now - last_time).seconds();
+    if (dt <= 0.0) {
+      dt = 0.02;  // fallback to 20 ms if time is not progressing yet
+    }
+    last_time = now;
+
     current_position_ += direction_ * rotation_speed_ * dt;
 
-    // Reverse direction if we hit the limits
+    // Reverse direction if we hit the limits (using simulated commanded angle)
     if (current_position_ >= max_angle_) {
       current_position_ = max_angle_;
       direction_ = -1.0;
-      RCLCPP_INFO(this->get_logger(), "Reversing direction at max angle");
+      RCLCPP_INFO(this->get_logger(),
+        "Reversing direction at commanded max angle (%.2f rad)", current_position_);
     } else if (current_position_ <= min_angle_) {
       current_position_ = min_angle_;
       direction_ = 1.0;
-      RCLCPP_INFO(this->get_logger(), "Reversing direction at min angle");
+      RCLCPP_INFO(this->get_logger(),
+        "Reversing direction at commanded min angle (%.2f rad)", current_position_);
     }
 
     // Publish command

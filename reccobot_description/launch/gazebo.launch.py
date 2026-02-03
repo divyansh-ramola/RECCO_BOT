@@ -60,9 +60,9 @@ def generate_launch_description():
         description="Delete any existing entity with the same name before spawning"
     )
 
-    # Forward the sim selection into xacro (is_ignition arg)
+    # Forward the sim selection into xacro (is_ignition arg + sim_mode:=true for simulation)
     robot_description = ParameterValue(
-        Command(["xacro ", LaunchConfiguration("model"), " is_ignition:=", LaunchConfiguration("use_ignition")]),
+        Command(["xacro ", LaunchConfiguration("model"), " is_ignition:=", LaunchConfiguration("use_ignition"), " sim_mode:=true"]),
         value_type=str
     )
 

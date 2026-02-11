@@ -10,7 +10,7 @@ const float TWO_PI_F = 6.28318530718;
 volatile long currentStep = 0;
 volatile long targetStep  = 0;
 
-volatile unsigned int stepPeriodUs = 2000;
+volatile unsigned int stepPeriodUs = 200;
 
 void stepperISR() {
   if (currentStep == targetStep) return;

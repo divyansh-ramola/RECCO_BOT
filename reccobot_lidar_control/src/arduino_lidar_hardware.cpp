@@ -1,15 +1,13 @@
 #include "reccobot_lidar_control/arduino_lidar_hardware.hpp"
 
-#include <chrono>
 #include <cmath>
+#include <cstring>
 #include <limits>
 #include <memory>
 #include <vector>
 #include <string>
-#include <sstream>
 
 #include <sys/socket.h>
-#include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -31,32 +29,25 @@ hardware_interface::CallbackReturn ArduinoLidarHardware::on_init(
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  // Read parameters from URDF - support both serial and TCP modes
-  if (info_.hardware_parameters.count("serial_port") > 0) {
-    // Serial mode
-    serial_port_ = info_.hardware_parameters["serial_port"];
-    baud_rate_ = info_.hardware_parameters.count("baud_rate") > 0 
-                 ? std::stoi(info_.hardware_parameters["baud_rate"]) 
-                 : 115200;
-    use_serial_ = true;
-  } else {
-    // TCP mode (legacy)
-    ip_ = info_.hardware_parameters["ip"];
-    state_port_ = std::stoi(info_.hardware_parameters["state_port"]);
-    command_port_ = std::stoi(info_.hardware_parameters["command_port"]);
-    use_serial_ = false;
-  }
+  // Read parameters from URDF
+  serial_port_ = info_.hardware_parameters.count("serial_port") > 0
+                 ? info_.hardware_parameters.at("serial_port")
+                 : "/dev/ttyUSB0";
+
+  baud_rate_ = info_.hardware_parameters.count("baud_rate") > 0
+               ? std::stoi(info_.hardware_parameters.at("baud_rate"))
+               : 115200;
 
   // Initialize state
-  hw_position_ = std::numeric_limits<double>::quiet_NaN();
-  hw_velocity_ = std::numeric_limits<double>::quiet_NaN();
-  hw_effort_ = std::numeric_limits<double>::quiet_NaN();
+  hw_position_ = 0.0;
+  hw_velocity_ = 0.0;
+  hw_effort_ = 0.0;
+  prev_hw_position_ = 0.0;
   hw_command_position_ = 0.0;
 
   connected_ = false;
-  state_socket_fd_ = -1;
-  command_socket_fd_ = -1;
   serial_fd_ = -1;
+  rx_len_ = 0;
 
   // Validate we have exactly one joint
   if (info_.joints.size() != 1)
@@ -67,7 +58,7 @@ hardware_interface::CallbackReturn ArduinoLidarHardware::on_init(
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  // Validate joint has position command and state interfaces
+  // Validate joint has position command interface
   const auto & joint = info_.joints[0];
   if (joint.command_interfaces.size() != 1 ||
       joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION)
@@ -86,17 +77,10 @@ hardware_interface::CallbackReturn ArduinoLidarHardware::on_init(
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  if (use_serial_) {
-    RCLCPP_INFO(
-      rclcpp::get_logger("ArduinoLidarHardware"),
-      "Initialized Arduino Lidar Hardware for joint '%s' (serial_port=%s, baud=%d)",
-      joint.name.c_str(), serial_port_.c_str(), baud_rate_);
-  } else {
-    RCLCPP_INFO(
-      rclcpp::get_logger("ArduinoLidarHardware"),
-      "Initialized Arduino Lidar Hardware for joint '%s' (ip=%s, state_port=%d, cmd_port=%d)",
-      joint.name.c_str(), ip_.c_str(), state_port_, command_port_);
-  }
+  RCLCPP_INFO(
+    rclcpp::get_logger("ArduinoLidarHardware"),
+    "Initialized for joint '%s' (serial_port=%s, baud=%d)",
+    joint.name.c_str(), serial_port_.c_str(), baud_rate_);
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -107,26 +91,23 @@ ArduinoLidarHardware::export_state_interfaces()
   std::vector<hardware_interface::StateInterface> state_interfaces;
 
   const auto & joint = info_.joints[0];
-  
+
   for (const auto & state_if : joint.state_interfaces)
   {
     if (state_if.name == hardware_interface::HW_IF_POSITION)
     {
       state_interfaces.emplace_back(
-        hardware_interface::StateInterface(
-          joint.name, hardware_interface::HW_IF_POSITION, &hw_position_));
+        joint.name, hardware_interface::HW_IF_POSITION, &hw_position_);
     }
     else if (state_if.name == hardware_interface::HW_IF_VELOCITY)
     {
       state_interfaces.emplace_back(
-        hardware_interface::StateInterface(
-          joint.name, hardware_interface::HW_IF_VELOCITY, &hw_velocity_));
+        joint.name, hardware_interface::HW_IF_VELOCITY, &hw_velocity_);
     }
     else if (state_if.name == hardware_interface::HW_IF_EFFORT)
     {
       state_interfaces.emplace_back(
-        hardware_interface::StateInterface(
-          joint.name, hardware_interface::HW_IF_EFFORT, &hw_effort_));
+        joint.name, hardware_interface::HW_IF_EFFORT, &hw_effort_);
     }
   }
 
@@ -137,46 +118,45 @@ std::vector<hardware_interface::CommandInterface>
 ArduinoLidarHardware::export_command_interfaces()
 {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
-
   const auto & joint = info_.joints[0];
-
   command_interfaces.emplace_back(
-    hardware_interface::CommandInterface(
-      joint.name, hardware_interface::HW_IF_POSITION, &hw_command_position_));
-
+    joint.name, hardware_interface::HW_IF_POSITION, &hw_command_position_);
   return command_interfaces;
 }
 
 hardware_interface::CallbackReturn ArduinoLidarHardware::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  RCLCPP_INFO(rclcpp::get_logger("ArduinoLidarHardware"), "Activating Arduino Lidar Hardware...");
+  RCLCPP_INFO(rclcpp::get_logger("ArduinoLidarHardware"), "Activating...");
 
   if (!connect_to_arduino())
   {
-    RCLCPP_ERROR(rclcpp::get_logger("ArduinoLidarHardware"), "Failed to connect to Arduino");
+    RCLCPP_ERROR(rclcpp::get_logger("ArduinoLidarHardware"), "Failed to connect to ESP32");
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  // Initialize position from Arduino
+  // Try to read initial position
   double initial_angle = 0.0;
-  if (read_angle_from_arduino(initial_angle))
+  // Give ESP a moment, then try a few reads
+  usleep(100000);  // 100 ms
+  for (int i = 0; i < 10; ++i)
   {
-    hw_position_ = initial_angle;
-    hw_command_position_ = initial_angle;
-  }
-  else
-  {
-    hw_position_ = 0.0;
-    hw_command_position_ = 0.0;
+    if (read_angle_from_arduino(initial_angle))
+    {
+      break;
+    }
+    usleep(30000);  // 30 ms
   }
 
+  hw_position_ = initial_angle;
+  prev_hw_position_ = initial_angle;
+  hw_command_position_ = initial_angle;
   hw_velocity_ = 0.0;
   hw_effort_ = 0.0;
 
   RCLCPP_INFO(
     rclcpp::get_logger("ArduinoLidarHardware"),
-    "Activated successfully (initial position: %.3f rad)", hw_position_);
+    "Activated (initial position: %.4f rad)", hw_position_);
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -184,26 +164,29 @@ hardware_interface::CallbackReturn ArduinoLidarHardware::on_activate(
 hardware_interface::CallbackReturn ArduinoLidarHardware::on_deactivate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  RCLCPP_INFO(rclcpp::get_logger("ArduinoLidarHardware"), "Deactivating Arduino Lidar Hardware...");
-  
+  RCLCPP_INFO(rclcpp::get_logger("ArduinoLidarHardware"), "Deactivating...");
   disconnect_from_arduino();
-
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
 hardware_interface::return_type ArduinoLidarHardware::read(
-  const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
+  const rclcpp::Time & /*time*/, const rclcpp::Duration & period)
 {
   if (!connected_)
   {
     return hardware_interface::return_type::ERROR;
   }
 
-  double angle = 0.0;
+  double angle = hw_position_;
   if (read_angle_from_arduino(angle))
   {
+    double dt = period.seconds();
+    if (dt > 0.0)
+    {
+      hw_velocity_ = (angle - prev_hw_position_) / dt;
+    }
+    prev_hw_position_ = hw_position_;
     hw_position_ = angle;
-    // Could compute velocity from position delta if needed
   }
 
   return hardware_interface::return_type::OK;
@@ -217,165 +200,92 @@ hardware_interface::return_type ArduinoLidarHardware::write(
     return hardware_interface::return_type::ERROR;
   }
 
-  // Send command to Arduino
   if (!send_command_to_arduino(hw_command_position_))
   {
     RCLCPP_WARN_THROTTLE(
       rclcpp::get_logger("ArduinoLidarHardware"),
       *rclcpp::Clock::make_shared(), 1000,
-      "Failed to send command to Arduino");
+      "Failed to send command to ESP32");
   }
 
   return hardware_interface::return_type::OK;
 }
 
+// ─────────────────── serial helpers ───────────────────
+
 bool ArduinoLidarHardware::connect_to_arduino()
 {
-  if (use_serial_)
-  {
-    RCLCPP_INFO(
-      rclcpp::get_logger("ArduinoLidarHardware"),
-      "Using serial mode (port=%s, baud=%d)",
-      serial_port_.c_str(), baud_rate_);
+  RCLCPP_INFO(
+    rclcpp::get_logger("ArduinoLidarHardware"),
+    "Opening serial %s @ %d baud", serial_port_.c_str(), baud_rate_);
 
-    if (serial_port_.empty())
-    {
-      RCLCPP_ERROR(
-        rclcpp::get_logger("ArduinoLidarHardware"),
-        "Serial port is empty; cannot connect in serial mode");
-      return false;
-    }
-
-    serial_fd_ = open(serial_port_.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
-    if (serial_fd_ < 0)
-    {
-      RCLCPP_ERROR(
-        rclcpp::get_logger("ArduinoLidarHardware"),
-        "Failed to open serial port %s: %s",
-        serial_port_.c_str(), strerror(errno));
-      return false;
-    }
-
-    struct termios tty;
-    if (tcgetattr(serial_fd_, &tty) != 0)
-    {
-      RCLCPP_ERROR(
-        rclcpp::get_logger("ArduinoLidarHardware"),
-        "Failed to get serial attributes: %s", strerror(errno));
-      close(serial_fd_);
-      serial_fd_ = -1;
-      return false;
-    }
-
-    cfmakeraw(&tty);
-
-    speed_t speed = B115200;
-    if (baud_rate_ == 9600) speed = B9600;
-    else if (baud_rate_ == 19200) speed = B19200;
-    else if (baud_rate_ == 38400) speed = B38400;
-    else if (baud_rate_ == 57600) speed = B57600;
-    else if (baud_rate_ == 115200) speed = B115200;
-
-    cfsetispeed(&tty, speed);
-    cfsetospeed(&tty, speed);
-
-    tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;
-    tty.c_cflag |= (CLOCAL | CREAD);
-    tty.c_cflag &= ~(PARENB | PARODD);
-    tty.c_cflag &= ~CSTOPB;
-    tty.c_cflag &= ~CRTSCTS;
-
-    tty.c_cc[VMIN] = 0;
-    tty.c_cc[VTIME] = 1;
-
-    if (tcsetattr(serial_fd_, TCSANOW, &tty) != 0)
-    {
-      RCLCPP_ERROR(
-        rclcpp::get_logger("ArduinoLidarHardware"),
-        "Failed to set serial attributes: %s", strerror(errno));
-      close(serial_fd_);
-      serial_fd_ = -1;
-      return false;
-    }
-
-    int flags = fcntl(serial_fd_, F_GETFL, 0);
-    fcntl(serial_fd_, F_SETFL, flags | O_NONBLOCK);
-
-    connected_ = true;
-    RCLCPP_INFO(
-      rclcpp::get_logger("ArduinoLidarHardware"),
-      "Connected to Arduino via serial %s (baud=%d)",
-      serial_port_.c_str(), baud_rate_);
-    return true;
-  }
-
-  // Create state socket
-  state_socket_fd_ = socket(AF_INET, SOCK_STREAM, 0);
-  if (state_socket_fd_ < 0)
-  {
-    RCLCPP_ERROR(rclcpp::get_logger("ArduinoLidarHardware"), "Failed to create state socket");
-    return false;
-  }
-
-  // Create command socket
-  command_socket_fd_ = socket(AF_INET, SOCK_STREAM, 0);
-  if (command_socket_fd_ < 0)
-  {
-    RCLCPP_ERROR(rclcpp::get_logger("ArduinoLidarHardware"), "Failed to create command socket");
-    close(state_socket_fd_);
-    state_socket_fd_ = -1;
-    return false;
-  }
-
-  // Connect state socket
-  struct sockaddr_in state_addr;
-  state_addr.sin_family = AF_INET;
-  state_addr.sin_port = htons(state_port_);
-  inet_pton(AF_INET, ip_.c_str(), &state_addr.sin_addr);
-
-  if (connect(state_socket_fd_, (struct sockaddr*)&state_addr, sizeof(state_addr)) < 0)
+  serial_fd_ = open(serial_port_.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
+  if (serial_fd_ < 0)
   {
     RCLCPP_ERROR(
       rclcpp::get_logger("ArduinoLidarHardware"),
-      "Failed to connect to Arduino state port %s:%d - %s",
-      ip_.c_str(), state_port_, strerror(errno));
-    close(state_socket_fd_);
-    close(command_socket_fd_);
-    state_socket_fd_ = -1;
-    command_socket_fd_ = -1;
+      "Failed to open %s: %s", serial_port_.c_str(), strerror(errno));
     return false;
   }
 
-  // Connect command socket
-  struct sockaddr_in command_addr;
-  command_addr.sin_family = AF_INET;
-  command_addr.sin_port = htons(command_port_);
-  inet_pton(AF_INET, ip_.c_str(), &command_addr.sin_addr);
-
-  if (connect(command_socket_fd_, (struct sockaddr*)&command_addr, sizeof(command_addr)) < 0)
+  struct termios tty;
+  if (tcgetattr(serial_fd_, &tty) != 0)
   {
     RCLCPP_ERROR(
       rclcpp::get_logger("ArduinoLidarHardware"),
-      "Failed to connect to Arduino command port %s:%d - %s",
-      ip_.c_str(), command_port_, strerror(errno));
-    close(state_socket_fd_);
-    close(command_socket_fd_);
-    state_socket_fd_ = -1;
-    command_socket_fd_ = -1;
+      "tcgetattr failed: %s", strerror(errno));
+    close(serial_fd_);
+    serial_fd_ = -1;
     return false;
   }
 
-  // Set state socket to non-blocking
-  int flags = fcntl(state_socket_fd_, F_GETFL, 0);
-  fcntl(state_socket_fd_, F_SETFL, flags | O_NONBLOCK);
+  cfmakeraw(&tty);
 
+  speed_t speed = B115200;
+  if (baud_rate_ == 9600) speed = B9600;
+  else if (baud_rate_ == 19200) speed = B19200;
+  else if (baud_rate_ == 38400) speed = B38400;
+  else if (baud_rate_ == 57600) speed = B57600;
+  else if (baud_rate_ == 115200) speed = B115200;
+  else if (baud_rate_ == 230400) speed = B230400;
+  else if (baud_rate_ == 460800) speed = B460800;
+
+  cfsetispeed(&tty, speed);
+  cfsetospeed(&tty, speed);
+
+  tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;   // 8-bit chars
+  tty.c_cflag |= (CLOCAL | CREAD);               // ignore modem, enable rx
+  tty.c_cflag &= ~(PARENB | PARODD);             // no parity
+  tty.c_cflag &= ~CSTOPB;                        // 1 stop bit
+  tty.c_cflag &= ~CRTSCTS;                       // no hw flow control
+
+  // Non-blocking: return immediately with whatever is available
+  tty.c_cc[VMIN] = 0;
+  tty.c_cc[VTIME] = 1;   // 100 ms timeout
+
+  if (tcsetattr(serial_fd_, TCSANOW, &tty) != 0)
+  {
+    RCLCPP_ERROR(
+      rclcpp::get_logger("ArduinoLidarHardware"),
+      "tcsetattr failed: %s", strerror(errno));
+    close(serial_fd_);
+    serial_fd_ = -1;
+    return false;
+  }
+
+  // Flush any stale data
+  tcflush(serial_fd_, TCIOFLUSH);
+
+  // Set non-blocking for the file descriptor
+  int flags = fcntl(serial_fd_, F_GETFL, 0);
+  fcntl(serial_fd_, F_SETFL, flags | O_NONBLOCK);
+
+  rx_len_ = 0;
   connected_ = true;
 
   RCLCPP_INFO(
     rclcpp::get_logger("ArduinoLidarHardware"),
-    "Connected to Arduino at %s (state:%d, cmd:%d)",
-    ip_.c_str(), state_port_, command_port_);
-
+    "Connected to ESP32 on %s", serial_port_.c_str());
   return true;
 }
 
@@ -386,191 +296,79 @@ void ArduinoLidarHardware::disconnect_from_arduino()
     close(serial_fd_);
     serial_fd_ = -1;
   }
-
-  if (state_socket_fd_ >= 0)
-  {
-    close(state_socket_fd_);
-    state_socket_fd_ = -1;
-  }
-
-  if (command_socket_fd_ >= 0)
-  {
-    close(command_socket_fd_);
-    command_socket_fd_ = -1;
-  }
-
   connected_ = false;
-
-  RCLCPP_INFO(rclcpp::get_logger("ArduinoLidarHardware"), "Disconnected from Arduino");
+  RCLCPP_INFO(rclcpp::get_logger("ArduinoLidarHardware"), "Disconnected from ESP32");
 }
 
 bool ArduinoLidarHardware::read_angle_from_arduino(double & angle)
 {
-  if (use_serial_)
-  {
-    if (serial_fd_ < 0) return false;
+  if (serial_fd_ < 0) return false;
 
-    static std::string buffer;
-    char temp[256];
-
-    while (true)
-    {
-  ssize_t n = ::read(serial_fd_, temp, sizeof(temp) - 1);
-      if (n > 0)
-      {
-        temp[n] = '\0';
-        buffer += temp;
-      }
-      else
-      {
-        if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
-        {
-          break;
-        }
-        if (n == 0)
-        {
-          break;
-        }
-        if (n < 0)
-        {
-          RCLCPP_ERROR(
-            rclcpp::get_logger("ArduinoLidarHardware"),
-            "Error reading from Arduino serial: %s", strerror(errno));
-          return false;
-        }
-      }
-    }
-
-    size_t pos;
-    while ((pos = buffer.find('\n')) != std::string::npos)
-    {
-      std::string line = buffer.substr(0, pos);
-      buffer.erase(0, pos + 1);
-
-      if (line.rfind("angle:", 0) == 0)
-      {
-        try
-        {
-          angle = std::stod(line.substr(6));
-          return true;
-        }
-        catch (const std::exception & e)
-        {
-          RCLCPP_WARN(
-            rclcpp::get_logger("ArduinoLidarHardware"),
-            "Failed to parse angle from line '%s': %s", line.c_str(), e.what());
-        }
-      }
-    }
-
-    return false;
-  }
-
-  if (state_socket_fd_ < 0) return false;
-
-  // Read available data (non-blocking)
-  static std::string buffer;
-  char temp[256];
-
+  // Read whatever bytes are available from the UART into our ring buffer
   while (true)
   {
-    ssize_t n = recv(state_socket_fd_, temp, sizeof(temp) - 1, 0);
-    
+    ssize_t n = ::read(serial_fd_, rx_buf_ + rx_len_, sizeof(rx_buf_) - rx_len_);
     if (n > 0)
     {
-      temp[n] = '\0';
-      buffer += temp;
-    }
-    else if (n == 0)
-    {
-      // Connection closed
-      RCLCPP_ERROR(rclcpp::get_logger("ArduinoLidarHardware"), "Arduino state connection closed");
-      connected_ = false;
-      return false;
+      rx_len_ += static_cast<size_t>(n);
     }
     else
     {
-      if (errno == EAGAIN || errno == EWOULDBLOCK)
-      {
-        // No more data available
-        break;
-      }
-      else
-      {
-        // Error
-        RCLCPP_ERROR(
-          rclcpp::get_logger("ArduinoLidarHardware"),
-          "Error reading from Arduino: %s", strerror(errno));
-        return false;
-      }
+      break;  // EAGAIN / no more data
     }
   }
 
-  // Parse buffer for "angle:<value>\n" lines
-  size_t pos;
-  while ((pos = buffer.find('\n')) != std::string::npos)
+  constexpr size_t PKT_SIZE = sizeof(AnglePacket);  // 8 bytes
+
+  // We may have accumulated several telemetry packets.
+  // Consume all complete packets, keep only the latest value.
+  bool got_any = false;
+  while (rx_len_ >= PKT_SIZE)
   {
-    std::string line = buffer.substr(0, pos);
-    buffer.erase(0, pos + 1);
+    AnglePacket pkt;
+    std::memcpy(&pkt, rx_buf_, PKT_SIZE);
 
-    if (line.rfind("angle:", 0) == 0)
+    angle = pkt.angle_urad / 1000000.0;
+    got_any = true;
+
+    // Shift remaining bytes forward
+    rx_len_ -= PKT_SIZE;
+    if (rx_len_ > 0)
     {
-      try
-      {
-        angle = std::stod(line.substr(6));
-        return true;
-      }
-      catch (const std::exception & e)
-      {
-        RCLCPP_WARN(
-          rclcpp::get_logger("ArduinoLidarHardware"),
-          "Failed to parse angle from line '%s': %s", line.c_str(), e.what());
-      }
+      std::memmove(rx_buf_, rx_buf_ + PKT_SIZE, rx_len_);
     }
   }
 
-  // No complete line yet
-  return false;
+  // Safety: if the buffer is getting full without producing a valid packet
+  // something is misaligned — flush it.
+  if (rx_len_ > PKT_SIZE * 4)
+  {
+    RCLCPP_WARN(
+      rclcpp::get_logger("ArduinoLidarHardware"),
+      "RX buffer overflow (%zu bytes), flushing", rx_len_);
+    rx_len_ = 0;
+    tcflush(serial_fd_, TCIFLUSH);
+  }
+
+  return got_any;
 }
 
 bool ArduinoLidarHardware::send_command_to_arduino(double angle)
 {
-  if (use_serial_)
-  {
-    if (serial_fd_ < 0) return false;
+  if (serial_fd_ < 0) return false;
 
-    std::ostringstream oss;
-    oss << "cmd:" << angle << "\n";
-    std::string msg = oss.str();
+  CmdPacket pkt;
+  pkt.target_urad = static_cast<int32_t>(angle * 1000000.0);
 
-  ssize_t n = ::write(serial_fd_, msg.c_str(), msg.size());
-    if (n < 0)
-    {
-      RCLCPP_ERROR(
-        rclcpp::get_logger("ArduinoLidarHardware"),
-        "Failed to send command to Arduino serial: %s", strerror(errno));
-      return false;
-    }
-    return true;
-  }
-
-  if (command_socket_fd_ < 0) return false;
-
-  std::ostringstream oss;
-  oss << "cmd:" << angle << "\n";
-  std::string msg = oss.str();
-
-  ssize_t n = send(command_socket_fd_, msg.c_str(), msg.size(), 0);
-
+  ssize_t n = ::write(serial_fd_, reinterpret_cast<const uint8_t *>(&pkt), sizeof(pkt));
   if (n < 0)
   {
     RCLCPP_ERROR(
       rclcpp::get_logger("ArduinoLidarHardware"),
-      "Failed to send command to Arduino: %s", strerror(errno));
+      "Serial write failed: %s", strerror(errno));
     return false;
   }
-
-  return true;
+  return (static_cast<size_t>(n) == sizeof(pkt));
 }
 
 }  // namespace reccobot_lidar_control

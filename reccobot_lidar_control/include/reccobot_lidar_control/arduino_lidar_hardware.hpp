@@ -1,6 +1,7 @@
 #ifndef RECCOBOT_LIDAR_CONTROL__ARDUINO_LIDAR_HARDWARE_HPP_
 #define RECCOBOT_LIDAR_CONTROL__ARDUINO_LIDAR_HARDWARE_HPP_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,6 +15,20 @@
 
 namespace reccobot_lidar_control
 {
+
+// Binary packet structs matching the ESP32 firmware exactly
+#pragma pack(push, 1)
+struct AnglePacket   // ESP → RPI  (8 bytes)
+{
+  int32_t  angle_urad;   // current angle in micro-radians
+  uint32_t t_us;         // ESP micros() timestamp
+};
+
+struct CmdPacket     // RPI → ESP  (4 bytes)
+{
+  int32_t  target_urad;  // target angle in micro-radians
+};
+#pragma pack(pop)
 
 class ArduinoLidarHardware : public hardware_interface::SystemInterface
 {
@@ -40,29 +55,26 @@ public:
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
 private:
-  // Arduino connection parameters - TCP mode
-  std::string ip_;
-  int state_port_;
-  int command_port_;
-  
-  // Arduino connection parameters - Serial mode
+  // Serial connection parameters
   std::string serial_port_;
   int baud_rate_;
-  bool use_serial_;
   int serial_fd_;
 
   // Joint state
   double hw_position_;
   double hw_velocity_;
   double hw_effort_;
+  double prev_hw_position_;
+  rclcpp::Time prev_read_time_;
 
   // Joint command
   double hw_command_position_;
 
-  // TCP connection state (we'll use simple socket API or asio)
-  int state_socket_fd_;
-  int command_socket_fd_;
   bool connected_;
+
+  // Receive buffer for accumulating partial binary reads
+  uint8_t rx_buf_[256];
+  size_t rx_len_;
 
   // Helper methods
   bool connect_to_arduino();

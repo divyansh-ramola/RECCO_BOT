@@ -17,7 +17,7 @@ def launch_setup(context, *args, **kwargs):
 <robot name="lidar_rotation">
   <link name="base_link"/>
   
-  <joint name="lidar_rotation_joint" type="continuous">
+  <joint name="base_coupling" type="continuous">
     <parent link="base_link"/>
     <child link="lidar_link"/>
     <origin xyz="0 0 0.1" rpy="0 0 0"/>
@@ -38,7 +38,7 @@ def launch_setup(context, *args, **kwargs):
       <param name="serial_port">{serial_port}</param>
       <param name="baud_rate">{baud_rate}</param>
     </hardware>
-    <joint name="lidar_rotation_joint">
+    <joint name="base_coupling">
       <command_interface name="position"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>

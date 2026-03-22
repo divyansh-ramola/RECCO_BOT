@@ -7,7 +7,7 @@ controller_manager:
 
 lidar_position_controller:
   ros__parameters:
-    joint: "lidar_rotation_joint"
+    joint: "base_coupling"
     
     # Command timeout (seconds) - if no command received, switches to continuous scan or holds position
     command_timeout: 0.5

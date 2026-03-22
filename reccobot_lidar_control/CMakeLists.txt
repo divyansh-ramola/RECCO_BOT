@@ -19,11 +19,8 @@ find_package(rclcpp_lifecycle REQUIRED)
 find_package(controller_interface REQUIRED)
 find_package(realtime_tools REQUIRED)
 
-find_package(Boost REQUIRED)
-
 add_executable(lidar_rotation_node src/lidar_rotation_node.cpp)
 add_executable(lidar_to_cloud src/lidar_to_cloud.cpp)
-add_executable(arduino_lidar_driver_node src/arduino_lidar_driver_node.cpp)
 target_include_directories(lidar_rotation_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
@@ -41,17 +38,6 @@ ament_target_dependencies(lidar_to_cloud
   "tf2"
   "tf2_geometry_msgs"
 )
-
-target_include_directories(arduino_lidar_driver_node PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-target_compile_features(arduino_lidar_driver_node PUBLIC c_std_99 cxx_std_17)
-ament_target_dependencies(arduino_lidar_driver_node
-  "rclcpp"
-  "sensor_msgs")
-
-target_link_libraries(arduino_lidar_driver_node
-  Boost::boost)
 
 # Build Arduino hardware interface plugin
 add_library(arduino_lidar_hardware SHARED
@@ -89,7 +75,7 @@ ament_target_dependencies(lidar_position_controller
 # Export controller plugin
 pluginlib_export_plugin_description_file(controller_interface lidar_controller_plugin.xml)
 
-install(TARGETS lidar_rotation_node lidar_to_cloud arduino_lidar_driver_node
+install(TARGETS lidar_rotation_node lidar_to_cloud
   DESTINATION lib/${PROJECT_NAME})
 
 install(TARGETS arduino_lidar_hardware lidar_position_controller

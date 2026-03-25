@@ -17,8 +17,8 @@ void setup() {
 void loop() {
 
   digitalWrite(PUL, HIGH);
-  delayMicroseconds(500);   // speed control
+  delayMicroseconds(20);   // speed control
 
   digitalWrite(PUL, LOW);
-  delayMicroseconds(500);
+  delayMicroseconds(20);
 }

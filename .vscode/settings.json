@@ -1,3 +1,36 @@
 {
-    "cmake.sourceDirectory": "/home/divyansh/reccobot_ws/src/l_BOT_URDF_renamed v3222(2)"
+    "cmake.sourceDirectory": "/home/divyansh/reccobot_ws/src/l_BOT_URDF_renamed v3222(2)",
+    "ROS2.distro": "humble",
+    "python.autoComplete.extraPaths": [
+        "/home/divyansh/spark_ws/install/ur10_e_moveit_config/local/lib/python3.10/dist-packages",
+        "/home/divyansh/spark_ws/install/spark_state_machine/lib/python3.10/site-packages",
+        "/home/divyansh/spark_ws/install/spark_state_machine_interfaces/local/lib/python3.10/dist-packages",
+        "/home/divyansh/spark_ws/install/spark_stage_2_ur/local/lib/python3.10/dist-packages",
+        "/home/divyansh/spark_ws/install/pcb_visualization_msgs/local/lib/python3.10/dist-packages",
+        "/home/divyansh/spark_ws/install/my-test-package/lib/python3.10/site-packages",
+        "/home/divyansh/ws_moveit2/install/moveit_task_constructor_core/local/lib/python3.10/dist-packages",
+        "/home/divyansh/ws_moveit2/install/moveit_configs_utils/lib/python3.10/site-packages",
+        "/home/divyansh/ws_moveit2/install/srdfdom/local/lib/python3.10/dist-packages",
+        "/home/divyansh/ws_moveit2/install/moveit_task_constructor_msgs/local/lib/python3.10/dist-packages",
+        "/home/divyansh/ws_moveit2/install/launch_param_builder/lib/python3.10/site-packages",
+        "/home/divyansh/reccobot_ws/install/reccobot_state_machine/lib/python3.10/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/divyansh/spark_ws/install/ur10_e_moveit_config/local/lib/python3.10/dist-packages",
+        "/home/divyansh/spark_ws/install/spark_state_machine/lib/python3.10/site-packages",
+        "/home/divyansh/spark_ws/install/spark_state_machine_interfaces/local/lib/python3.10/dist-packages",
+        "/home/divyansh/spark_ws/install/spark_stage_2_ur/local/lib/python3.10/dist-packages",
+        "/home/divyansh/spark_ws/install/pcb_visualization_msgs/local/lib/python3.10/dist-packages",
+        "/home/divyansh/spark_ws/install/my-test-package/lib/python3.10/site-packages",
+        "/home/divyansh/ws_moveit2/install/moveit_task_constructor_core/local/lib/python3.10/dist-packages",
+        "/home/divyansh/ws_moveit2/install/moveit_configs_utils/lib/python3.10/site-packages",
+        "/home/divyansh/ws_moveit2/install/srdfdom/local/lib/python3.10/dist-packages",
+        "/home/divyansh/ws_moveit2/install/moveit_task_constructor_msgs/local/lib/python3.10/dist-packages",
+        "/home/divyansh/ws_moveit2/install/launch_param_builder/lib/python3.10/site-packages",
+        "/home/divyansh/reccobot_ws/install/reccobot_state_machine/lib/python3.10/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
 }

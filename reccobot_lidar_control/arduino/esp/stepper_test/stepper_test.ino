@@ -1,8 +1,8 @@
 #include <Arduino.h>
 
-#define PUL 25
-#define DIR 26
-#define ENA 27
+#define PUL 26
+#define DIR 27
+#define ENA 25
 
 void setup() {
 

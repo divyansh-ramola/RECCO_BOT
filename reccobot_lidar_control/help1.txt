@@ -1,0 +1,1 @@
+ros2 launch reccobot_lidar_control lidar_control_standalone.launch.py   serial_port:=/dev/ttyAMA0   baud_rate:=115200   controller_config_file:=lidar_controller.yaml                       
